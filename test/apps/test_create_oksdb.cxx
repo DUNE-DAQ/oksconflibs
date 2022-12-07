@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "config/Configuration.h"
-#include "config/ConfigObject.h"
+#include "config/Configuration.hpp"
+#include "config/ConfigObject.hpp"
 
 int main(int argc, char *argv[])
 {

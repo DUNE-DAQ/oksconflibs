@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "config/Configuration.h"
-#include "config/ConfigObject.h"
-#include "config/Schema.h"
+#include "config/Configuration.hpp"
+#include "config/ConfigObject.hpp"
+#include "config/Schema.hpp"
 
 
 static const char *

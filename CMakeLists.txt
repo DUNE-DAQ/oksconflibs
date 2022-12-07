@@ -6,21 +6,13 @@ find_package(daq-cmake REQUIRED)
 find_package(config REQUIRED)
 find_package(oks_utils REQUIRED)
 find_package(oks REQUIRED)
+find_package(logging REQUIRED)
 
 daq_setup_environment()
 
-daq_add_library(OksConfiguration.cpp OksConfigObject.cpp LINK_LIBRARIES config::config oks_utils::oks_utils oks::oks)
+daq_add_library(OksConfiguration.cpp OksConfigObject.cpp LINK_LIBRARIES config::config oks_utils::oks_utils oks::oks logging::logging)
 
-# tdaq_add_library(roksconfig
-#   src/ROksConfiguration.cpp
-#   LINK_LIBRARIES roks oksconfig)
+daq_add_application(test_oksdb test_oksdb.cxx TEST LINK_LIBRARIES config::config)
+daq_add_application(test_create_oksdb test_create_oksdb.cxx TEST LINK_LIBRARIES config::config)
 
-# tdaq_add_executable(test_oksdb NOINSTALL
-#   test/test_oksdb.cpp
-#   LINK_LIBRARIES config)
-
-# tdaq_add_executable(test_create_oksdb NOINSTALL
-#   test/test_create_oksdb.cpp
-#   LINK_LIBRARIES config)
-
-# add_test(NAME oksconfig_check  COMMAND ${TDAQ_RUNNER} ${CMAKE_CURRENT_SOURCE_DIR}/cmt/test.sh ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+daq_install()
