@@ -43,7 +43,7 @@ OksConfigObject::get_type(const std::string& name) const
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic(ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
     }
 }
 
@@ -62,7 +62,7 @@ template<class T>
       }
     catch (oks::exception& ex)
       {
-        throw daq::config::Generic(ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
+        throw dunedaq::config::Generic(ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
       }
   }
 
@@ -83,14 +83,14 @@ template<class T>
       }
     catch (oks::exception& ex)
       {
-        throw daq::config::Generic( ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
+        throw dunedaq::config::Generic( ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
       }
 
     if (data->type != OksData::list_type)
       {
         std::ostringstream text;
         text << "attribute \"" << name << "\" of object " << m_obj << " is not of a multi-value";
-        throw daq::config::Generic( ERS_HERE, text.str().c_str() );
+        throw dunedaq::config::Generic( ERS_HERE, text.str().c_str() );
       }
 
     value.clear();
@@ -199,7 +199,7 @@ OksConfigObject::get(const std::string& name, std::string& value)
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic( ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic( ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
     }
 
   if ((data->type == OksData::string_type) || (data->type == OksData::enum_type))
@@ -221,7 +221,7 @@ OksConfigObject::get(const std::string& name, std::string& value)
     {
       std::ostringstream text;
       text << "read wrong attribute type instead of expected \'string\' for attribute \"" << name << "\" of object " << m_obj;
-      throw daq::config::Generic( ERS_HERE, text.str().c_str() );
+      throw dunedaq::config::Generic( ERS_HERE, text.str().c_str() );
     }
 }
 
@@ -239,7 +239,7 @@ OksConfigObject::get(const std::string& name, ConfigObject& value)
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj).c_str(), ex);
     }
 
   if (data->type != OksData::object_type)
@@ -248,7 +248,7 @@ OksConfigObject::get(const std::string& name, ConfigObject& value)
         {
           std::ostringstream text;
           text << "referenced object " << *data << " is not loaded";
-          throw daq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj, text.str().c_str()).c_str());
+          throw dunedaq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj, text.str().c_str()).c_str());
         }
 
       std::ostringstream text;
@@ -262,7 +262,7 @@ OksConfigObject::get(const std::string& name, ConfigObject& value)
         {
           text << "non-object type was read";
         }
-      throw daq::config::Generic(ERS_HERE, text.str().c_str());
+      throw dunedaq::config::Generic(ERS_HERE, text.str().c_str());
     }
 
   if (data->data.OBJECT != nullptr)
@@ -355,14 +355,14 @@ OksConfigObject::get(const std::string& name, std::vector<std::string>& value)
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic(ERS_HERE, mk_get_error_text("attribute", name, m_obj).c_str(), ex);
     }
 
   if (data->type != OksData::list_type)
     {
       std::ostringstream text;
       text << "attribute \"" << name << "\" of object " << m_obj << " is not of a multi-value";
-      throw daq::config::Generic( ERS_HERE, text.str().c_str());
+      throw dunedaq::config::Generic( ERS_HERE, text.str().c_str());
     }
 
   value.clear();
@@ -385,7 +385,7 @@ OksConfigObject::get(const std::string& name, std::vector<std::string>& value)
         {
           std::ostringstream text;
           text << "wrong type of attribute \"" << name << "\" of object " << m_obj << " (instead of expected string)";
-          throw daq::config::Generic( ERS_HERE, text.str().c_str() );
+          throw dunedaq::config::Generic( ERS_HERE, text.str().c_str() );
         }
     }
 }
@@ -405,14 +405,14 @@ OksConfigObject::get(const std::string& name, std::vector<ConfigObject>& value)
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj).c_str(), ex);
     }
 
   if (data->type != OksData::list_type)
     {
       std::ostringstream text;
       text << "the value of relationship \"" << name << "\" of object " << m_obj << " is not multi-value";
-      throw daq::config::Generic( ERS_HERE, text.str().c_str());
+      throw dunedaq::config::Generic( ERS_HERE, text.str().c_str());
     }
 
   value.clear();
@@ -475,7 +475,7 @@ OksConfigObject::rel(const std::string& name, std::vector<ConfigObject>& value)
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic(ERS_HERE, mk_get_error_text("relationship", name, m_obj).c_str(), ex);
     }
 }
 
@@ -533,13 +533,13 @@ OksConfigObject::set_attr_value(const std::string& name, OksData & data)
       //test_checkout_needs();
       m_obj->SetAttributeValue(name, &data);
     }
-  catch (daq::config::Generic& ex)
+  catch (dunedaq::config::Generic& ex)
     {
-      throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
     }
   catch(oks::exception& ex)
     {
-      throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
     }
 }
 
@@ -554,13 +554,13 @@ OksConfigObject::set_rel_value(const std::string& name, OksData & data, bool ski
       //test_checkout_needs();
       m_obj->SetRelationshipValue(name, &data, skip_non_null_check);
     }
-  catch (daq::config::Generic& ex)
+  catch (dunedaq::config::Generic& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_set_error_text("relationship", name, m_obj).c_str(), ex );
+      throw dunedaq::config::Generic(ERS_HERE, mk_set_error_text("relationship", name, m_obj).c_str(), ex );
     }
   catch(oks::exception& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_set_error_text("relationship", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic(ERS_HERE, mk_set_error_text("relationship", name, m_obj).c_str(), ex);
     }
 }
 
@@ -666,12 +666,12 @@ OksConfigObject::set_enum(const std::string& name, const std::string& value)
             }
           catch (std::exception& ex)
             {
-              throw(daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, ex.what()).c_str()) );
+              throw(dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, ex.what()).c_str()) );
             }
         }
       else
         {
-          throw ( daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str()) );
+          throw ( dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str()) );
         }
     }
 
@@ -694,7 +694,7 @@ void OksConfigObject::set_class(const std::string& name, const std::string& valu
 
       if (!attrs || attrs->empty())
         {
-          throw daq::config::Generic(ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str());
+          throw dunedaq::config::Generic(ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str());
         }
 
       try
@@ -703,7 +703,7 @@ void OksConfigObject::set_class(const std::string& name, const std::string& valu
         }
       catch (oks::exception & ex)
         {
-          throw daq::config::Generic(ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+          throw dunedaq::config::Generic(ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
         }
     }
 
@@ -722,7 +722,7 @@ OksConfigObject::set_date(const std::string& name, const std::string& value)
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic(ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic(ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
     }
 
   set_attr_value(name, d);
@@ -740,7 +740,7 @@ OksConfigObject::set_time(const std::string& name, const std::string& value)
     }
   catch (oks::exception& ex)
     {
-      throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+      throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
     }
 
   set_attr_value(name, d);
@@ -841,14 +841,14 @@ OksConfigObject::set_enum(const std::string& name, const std::vector<std::string
                 }
               catch (std::exception& ex)
                 {
-                  throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+                  throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
                 }
 
             }
         }
       else
         {
-          throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str());
+          throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str());
         }
     }
 
@@ -870,7 +870,7 @@ OksConfigObject::set_class(const std::string& name, const std::vector<std::strin
 
       if (!attrs || attrs->empty())
         {
-          throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str());
+          throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj, "no such attribute").c_str());
         }
 
       for (const auto& i : value)
@@ -885,7 +885,7 @@ OksConfigObject::set_class(const std::string& name, const std::vector<std::strin
             }
           catch (oks::exception & ex)
             {
-              throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+              throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
             }
 
           d.data.LIST->push_back(d2);
@@ -910,7 +910,7 @@ OksConfigObject::set_date(const std::string& name, const std::vector<std::string
         }
       catch (oks::exception& ex)
         {
-          throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+          throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
         }
       d.data.LIST->push_back(d2);
     }
@@ -933,7 +933,7 @@ OksConfigObject::set_time(const std::string& name, const std::vector<std::string
         }
       catch (oks::exception& ex)
         {
-          throw daq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
+          throw dunedaq::config::Generic( ERS_HERE, mk_set_error_text("attribute", name, m_obj).c_str(), ex);
         }
       d.data.LIST->push_back(d2);
     }
@@ -986,7 +986,7 @@ OksConfigObject::move(const std::string& at)
             }
           catch (oks::exception& ex)
             {
-              throw daq::config::Generic(ERS_HERE, ex.what());
+              throw dunedaq::config::Generic(ERS_HERE, ex.what());
             }
         }
     }
@@ -994,7 +994,7 @@ OksConfigObject::move(const std::string& at)
     {
       std::ostringstream text;
       text << "file \"" << at << "\" is not loaded";
-      throw daq::config::Generic(ERS_HERE, text.str().c_str());
+      throw dunedaq::config::Generic(ERS_HERE, text.str().c_str());
     }
 }
 
@@ -1031,7 +1031,7 @@ OksConfigObject::rename(const std::string& new_id)
     {
       std::ostringstream text;
       text << "cannot rename object " << m_obj << " to new name \'" << new_id << "\' because " << ex.what();
-      throw daq::config::Generic(ERS_HERE, text.str().c_str());
+      throw dunedaq::config::Generic(ERS_HERE, text.str().c_str());
     }
 }
 
@@ -1047,5 +1047,5 @@ OksConfigObject::reset()
       m_obj = nullptr;
     }
 
-  m_state = (m_obj ? daq::config::Valid : daq::config::Deleted);
+  m_state = (m_obj ? dunedaq::config::Valid : dunedaq::config::Deleted);
 }

@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
       db_exist = true;
       std::cout << "database file " << db_name << " already created" << std::endl;
     }
-    catch(daq::config::Exception & dummu) {
+    catch(dunedaq::config::Exception & dummu) {
       std::cout << "create database file " << db_name << std::endl;
     }
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
     std::cout << "done, see file \'" << db_name << "\'\n";
   }
-  catch(daq::config::Exception & ex) {
+  catch(dunedaq::config::Exception & ex) {
     std::cerr << "ERROR: " << ex << std::endl;
     return 1;
   }

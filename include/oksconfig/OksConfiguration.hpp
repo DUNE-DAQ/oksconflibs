@@ -43,7 +43,7 @@ class OksConfiguration : public ConfigurationImpl {
     virtual void get(const std::string& class_name, const std::string& name, ConfigObject& object, unsigned long rlevel, const std::vector<std::string> * rclasses);
     virtual void get(const std::string& class_name, std::vector<ConfigObject>& objects, const std::string& query, unsigned long rlevel, const std::vector<std::string> * rclasses);
     virtual void get(const ConfigObject& obj_from, const std::string& query, std::vector<ConfigObject>& objects, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual daq::config::class_t * get(const std::string& class_name, bool direct_only);
+    virtual dunedaq::config::class_t * get(const std::string& class_name, bool direct_only);
     virtual void get_superclasses(config::fmap<config::fset>& schema);
 
     virtual void create(const std::string& at, const std::string& class_name, const std::string& id, ConfigObject& object);
@@ -63,8 +63,8 @@ class OksConfiguration : public ConfigurationImpl {
     virtual void commit(const std::string& why);
     virtual void abort();
     virtual void prefetch_all_data() { ; } // nothing to do with OKS data already in-memory
-    virtual std::vector<daq::config::Version> get_changes();
-    virtual std::vector<daq::config::Version> get_versions(const std::string& since, const std::string& until, daq::config::Version::QueryType type, bool skip_irrelevant);
+    virtual std::vector<dunedaq::config::Version> get_changes();
+    virtual std::vector<dunedaq::config::Version> get_versions(const std::string& since, const std::string& until, dunedaq::config::Version::QueryType type, bool skip_irrelevant);
 
     virtual void subscribe(const std::set<std::string>& class_names, const SMap& objs, ConfigurationImpl::notify cb, ConfigurationImpl::pre_notify pre_cb);
     virtual void unsubscribe();

@@ -15,7 +15,7 @@ all2string(bool direct)
 static void
 show_info(Configuration& config, const char * name, bool direct)
 {
-  const daq::config::class_t& c = config.get_class_info(name, direct);
+  const dunedaq::config::class_t& c = config.get_class_info(name, direct);
 
   std::cout << "class " << c.p_name << std::endl;
 
