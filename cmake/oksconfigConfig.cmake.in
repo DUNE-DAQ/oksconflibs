@@ -3,10 +3,10 @@
 
 include(CMakeFindDependencyMacro)
 
-# Insert find_dependency() calls for your package's dependencies in
-# the place of this comment. Make sure they match up with the
-# find_package calls in your package's CMakeLists.txt file
-
+find_package(config)
+find_package(oks_utils)
+find_package(oks)
+find_package(logging)
 
 
 # Figure out whether or not this dependency is an installed package or
