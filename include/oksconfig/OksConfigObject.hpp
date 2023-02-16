@@ -8,7 +8,7 @@
 #include "oks/kernel.hpp"
 #include "oks/object.hpp"
 
-#include "config/ConfigObjectImpl.hpp"
+#include "oksdbinterfaces/ConfigObjectImpl.hpp"
 
 class ConfigurationImpl;
 class OksConfiguration;
