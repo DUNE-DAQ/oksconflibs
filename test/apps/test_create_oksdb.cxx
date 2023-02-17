@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "config/Configuration.hpp"
-#include "config/ConfigObject.hpp"
+#include "oksdbinterfaces/Configuration.hpp"
+#include "oksdbinterfaces/ConfigObject.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
       db_exist = true;
       std::cout << "database file " << db_name << " already created" << std::endl;
     }
-    catch(dunedaq::config::Exception & dummu) {
+    catch(dunedaq::oksdbinterfaces::Exception & dummu) {
       std::cout << "create database file " << db_name << std::endl;
     }
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
     std::cout << "done, see file \'" << db_name << "\'\n";
   }
-  catch(dunedaq::config::Exception & ex) {
+  catch(dunedaq::oksdbinterfaces::Exception & ex) {
     std::cerr << "ERROR: " << ex << std::endl;
     return 1;
   }

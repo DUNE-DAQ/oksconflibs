@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "config/Configuration.hpp"
-#include "config/ConfigObject.hpp"
-#include "config/Schema.hpp"
+#include "oksdbinterfaces/Configuration.hpp"
+#include "oksdbinterfaces/ConfigObject.hpp"
+#include "oksdbinterfaces/Schema.hpp"
 
 
 static const char *
@@ -15,7 +15,7 @@ all2string(bool direct)
 static void
 show_info(Configuration& config, const char * name, bool direct)
 {
-  const dunedaq::config::class_t& c = config.get_class_info(name, direct);
+  const dunedaq::oksdbinterfaces::class_t& c = config.get_class_info(name, direct);
 
   std::cout << "class " << c.p_name << std::endl;
 
