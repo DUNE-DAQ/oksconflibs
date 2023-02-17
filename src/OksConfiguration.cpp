@@ -13,7 +13,7 @@
 #include "oks/object.hpp"
 #include "oks/query.hpp"
 #include "oks/relationship.hpp"
-#include "oks_utils/oks/access.hpp"
+#include "oksutils/oks/access.hpp"
 
 #include "oksdbinterfaces/Configuration.hpp"
 #include "oksdbinterfaces/ConfigObject.hpp"
