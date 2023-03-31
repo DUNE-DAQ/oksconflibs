@@ -23,11 +23,15 @@
 #include "oksconfig/OksConfiguration.hpp"
 #include "oksconfig/OksConfigObject.hpp"
 
-ERS_DECLARE_ISSUE( oksconfig, Exception, , )
-
+namespace dunedaq{
+  ERS_DECLARE_ISSUE( oksconfig, Exception, , )
+}
+using namespace dunedaq;
+using namespace dunedaq::oks;
+using namespace dunedaq::oksconfig;
   // to be used as plug-in
 
-extern "C" ConfigurationImpl * _oksconfig_creator_ (const std::string& spec) {
+extern "C" oksdbinterfaces::ConfigurationImpl * _oksconfig_creator_ (const std::string& spec) {
   try {
     std::unique_ptr<OksConfiguration> impl(new OksConfiguration());
     if(!spec.empty()) { impl->open_db(spec); }
@@ -42,7 +46,7 @@ extern "C" ConfigurationImpl * _oksconfig_creator_ (const std::string& spec) {
 }
 
 
-struct OksConfigurationCheckDB {
+struct dunedaq::oksconfig::OksConfigurationCheckDB {
 
   OksConfiguration * m_db;
   bool m_run;
@@ -418,6 +422,8 @@ OksConfiguration::commit(const std::string& log_message)
   m_created_files.clear();
 }
 
+namespace dunedaq{
+  namespace oksconfig{
 class ResubscribeGuard {
 
   public:
@@ -449,7 +455,6 @@ class ResubscribeGuard {
 
 };
 
-
 void
 OksConfiguration::abort()
 {
@@ -469,7 +474,7 @@ OksConfiguration::abort()
       if (int result = unlink(file_name.c_str()))
         {
           std::ostringstream text;
-          text << "abort changes failed since cannot erase created file \'" << file_name << "\'; unlink failed with code " << result << ": " << strerror(errno);
+          text << "abort changes failed since cannot erase created file \'" << file_name << "\'; unlink failed with code " << result << ": " << dunedaq::oks::strerror(errno);
           throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
         }
     }
@@ -594,11 +599,12 @@ OksConfiguration::get_versions(const std::string& since, const std::string& unti
     }
 }
 
+}}
 
-OksConfigObject *
-OksConfiguration::new_object(OksObject * obj) noexcept
+dunedaq::oksconfig::OksConfigObject *
+dunedaq::oksconfig::OksConfiguration::new_object(oks::OksObject * obj) noexcept
 {
-  return insert_object<OksConfigObject>(obj, obj->GetId(), obj->GetClass()->get_name());
+  return insert_object<dunedaq::oksconfig::OksConfigObject>(obj, obj->GetId(), obj->GetClass()->get_name());
 }
 
 bool
@@ -627,7 +633,8 @@ OksConfiguration::test_object(const std::string& class_name, const std::string& 
 }
 
 void
-OksConfiguration::get(const std::string &class_name, const std::string &name, ConfigObject &object, unsigned long /*rlevel*/, const std::vector<std::string>* /* rclasses */)
+dunedaq::oksconfig::OksConfiguration::get(const std::string &class_name, const std::string &name,
+                                          dunedaq::oksdbinterfaces::ConfigObject &object, unsigned long /*rlevel*/, const std::vector<std::string>* /* rclasses */)
 {
   if (OksClass * cl = m_kernel->find_class(class_name))
     {
@@ -660,7 +667,7 @@ OksConfiguration::get(const std::string &class_name, const std::string &name, Co
 }
 
 void
-OksConfiguration::get(const std::string& class_name, std::vector<ConfigObject>& objects, const std::string& query, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
+OksConfiguration::get(const std::string& class_name, std::vector<oksdbinterfaces::ConfigObject>& objects, const std::string& query, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
 {
   if(OksClass * cl = m_kernel->find_class(class_name)) {
     objects.clear();
@@ -700,7 +707,7 @@ OksConfiguration::get(const std::string& class_name, std::vector<ConfigObject>& 
 }
 
 void
-OksConfiguration::get(const ConfigObject& obj_from, const std::string& query, std::vector<ConfigObject>& objects, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
+OksConfiguration::get(const oksdbinterfaces::ConfigObject& obj_from, const std::string& query, std::vector<oksdbinterfaces::ConfigObject>& objects, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
 {
   if(obj_from.is_null()) {
     throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "parameter \'obj_from\' is (null)" ) );
@@ -835,14 +842,14 @@ OksConfiguration::get_superclasses(oksdbinterfaces::fmap<oksdbinterfaces::fset>&
 
   for(OksClass::Map::const_iterator i = m_kernel->classes().begin(); i != m_kernel->classes().end(); ++i) {
     if(const OksClass::FList * scl = i->second->all_super_classes()) {
-      const std::string* name = &DalFactory::instance().get_known_class_name_ref(i->second->get_name());
+      const std::string* name = &oksdbinterfaces::DalFactory::instance().get_known_class_name_ref(i->second->get_name());
 
       auto& subclasses = schema[name];
 
       if(!scl->empty()) {
         subclasses.reserve(scl->size() * 3);
         for(OksClass::FList::const_iterator j = scl->begin(); j != scl->end(); ++j) {
-          subclasses.insert(&DalFactory::instance().get_known_class_name_ref((*j)->get_name()));
+          subclasses.insert(&oksdbinterfaces::DalFactory::instance().get_known_class_name_ref((*j)->get_name()));
         }
       }
     }
@@ -851,7 +858,7 @@ OksConfiguration::get_superclasses(oksdbinterfaces::fmap<oksdbinterfaces::fset>&
 
 
 void
-OksConfiguration::create(OksFile * at, const std::string& class_name, const std::string& id, ConfigObject& object)
+OksConfiguration::create(OksFile * at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object)
 {
   try {
     m_kernel->set_active_data(at);
@@ -891,7 +898,7 @@ OksConfiguration::create(OksFile * at, const std::string& class_name, const std:
 }
 
 void
-OksConfiguration::create(const std::string& at, const std::string& class_name, const std::string& id, ::ConfigObject& object)
+OksConfiguration::create(const std::string& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object)
 {
   if(at.empty() == true) {
     throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "parameter \'at\' (i.e. filename) cannot be empty" ) );
@@ -908,7 +915,7 @@ OksConfiguration::create(const std::string& at, const std::string& class_name, c
 }
 
 void
-OksConfiguration::create(const ConfigObject& at, const std::string& class_name, const std::string& id, ConfigObject& object)
+OksConfiguration::create(const oksdbinterfaces::ConfigObject& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object)
 {
   create((static_cast<const OksConfigObject *>(at.implementation()))->m_obj->get_file(), class_name, id, object);
 }
@@ -964,7 +971,7 @@ InheritanceData::InheritanceData(const OksKernel &kernel)
    */
 
 static void
-check(std::vector<ConfigurationChange *>& changes,
+check(std::vector<oksdbinterfaces::ConfigurationChange *>& changes,
       const InheritanceData & inheritance,
       const std::set<std::string>& class_names,
       const OksConfiguration::SMap & objects,
@@ -989,7 +996,7 @@ check(std::vector<ConfigurationChange *>& changes,
       std::set<std::string>::const_iterator i = omi->second.find(obj_id);
 
       if(i != omi->second.end()) {
-        ConfigurationChange::add(changes, obj_class, obj_id, action);
+        oksdbinterfaces::ConfigurationChange::add(changes, obj_class, obj_id, action);
       }
     }
   }
@@ -999,7 +1006,7 @@ check(std::vector<ConfigurationChange *>& changes,
 
   if(action == '+' || omi == objects.end()) {
     if(any || class_names.find(obj_class) != class_names.end()) {
-      ConfigurationChange::add(changes, obj_class, obj_id, action);
+      oksdbinterfaces::ConfigurationChange::add(changes, obj_class, obj_id, action);
     }
   }
 
@@ -1026,7 +1033,7 @@ check(std::vector<ConfigurationChange *>& changes,
 	  omi->second.find(obj_id) != omi->second.end()
 	)
       ) {
-        ConfigurationChange::add(changes, *j, obj_id, action);
+        oksdbinterfaces::ConfigurationChange::add(changes, *j, obj_id, action);
       }
     }
   }
@@ -1067,7 +1074,7 @@ class DestroyGuard2 {
 
 
 void
-OksConfiguration::destroy(::ConfigObject& obj)
+OksConfiguration::destroy(oksdbinterfaces::ConfigObject& obj)
 {
   OksObject * o((static_cast<const OksConfigObject *>(obj.implementation()))->m_obj);
 
@@ -1085,7 +1092,7 @@ OksConfiguration::destroy(::ConfigObject& obj)
   }
 
   if(m_conf) {
-    std::vector<ConfigurationChange *> changes;
+    std::vector<oksdbinterfaces::ConfigurationChange *> changes;
 
     for(SMap::iterator i = m_removed.begin(); i != m_removed.end(); ++i) {
       for(std::set<std::string>::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
@@ -1095,7 +1102,7 @@ OksConfiguration::destroy(::ConfigObject& obj)
 
     if(!changes.empty()) {
       m_conf->update_cache(changes);
-      ConfigurationChange::clear(changes);
+      oksdbinterfaces::ConfigurationChange::clear(changes);
     }
   }
 }
@@ -1109,7 +1116,7 @@ OksConfiguration::is_writable(const std::string& db_name)
         {
           if (!m_kernel->get_user_repository_root().empty())
             {
-              return oks::access::is_writable(*h, OksKernel::get_user_name());
+              return oksutils::access::is_writable(*h, OksKernel::get_user_name());
             }
           else
             {
@@ -1188,7 +1195,7 @@ OksConfiguration::remove_include(const std::string& db_name, const std::string& 
     throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
   }
 
-  std::vector<ConfigurationChange *> changes;
+  std::vector<oksdbinterfaces::ConfigurationChange *> changes;
 
   for(SMap::iterator i = m_removed.begin(); i != m_removed.end(); ++i) {
     for(std::set<std::string>::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
@@ -1198,7 +1205,7 @@ OksConfiguration::remove_include(const std::string& db_name, const std::string& 
 
   if(!changes.empty()) {
     m_conf->update_cache(changes);
-    ConfigurationChange::clear(changes);
+    oksdbinterfaces::ConfigurationChange::clear(changes);
   }
 }
 
@@ -1305,7 +1312,7 @@ OksConfiguration::check_db()
           m_kernel->subscribe_change_object(0, 0);
           m_kernel->subscribe_delete_object(0, 0);
 
-          std::vector<ConfigurationChange *> changes;
+          std::vector<oksdbinterfaces::ConfigurationChange *> changes;
 
             {
               for (auto& i : m_created)
@@ -1348,7 +1355,7 @@ OksConfiguration::check_db()
           if (!changes.empty())
             {
               (*m_fn)(changes, m_conf);
-              ConfigurationChange::clear(changes);
+              oksdbinterfaces::ConfigurationChange::clear(changes);
             }
 
           m_created.clear();
