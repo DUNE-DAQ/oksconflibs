@@ -13,18 +13,23 @@
 
 #include "oksdbinterfaces/ConfigurationImpl.hpp"
 
+namespace dunedaq {
+namespace oks {
   // forward declarations for OKS classes
-class OksKernel;
-class OksObject;
-class OksClass;
-class OksFile;
+  class OksKernel;
+  class OksObject;
+  class OksClass;
+  class OksFile;
+}
+
+namespace oksconfig {
 
   // forward declaration 
 class OksConfigObject;
 struct OksConfigurationCheckDB;
 
 
-class OksConfiguration : public ConfigurationImpl {
+class OksConfiguration : public oksdbinterfaces::ConfigurationImpl {
 
   friend class OksConfigObject;
   friend struct OksConfigurationCheckDB;
@@ -40,15 +45,15 @@ class OksConfiguration : public ConfigurationImpl {
   public:
 
     virtual bool test_object(const std::string& class_name, const std::string& name, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const std::string& class_name, const std::string& name, ConfigObject& object, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const std::string& class_name, std::vector<ConfigObject>& objects, const std::string& query, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const ConfigObject& obj_from, const std::string& query, std::vector<ConfigObject>& objects, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual dunedaq::oksdbinterfaces::class_t * get(const std::string& class_name, bool direct_only);
+    virtual void get(const std::string& class_name, const std::string& name, oksdbinterfaces::ConfigObject& object, unsigned long rlevel, const std::vector<std::string> * rclasses);
+    virtual void get(const std::string& class_name, std::vector<oksdbinterfaces::ConfigObject>& objects, const std::string& query, unsigned long rlevel, const std::vector<std::string> * rclasses);
+    virtual void get(const oksdbinterfaces::ConfigObject& obj_from, const std::string& query, std::vector<oksdbinterfaces::ConfigObject>& objects, unsigned long rlevel, const std::vector<std::string> * rclasses);
+    virtual oksdbinterfaces::class_t * get(const std::string& class_name, bool direct_only);
     virtual void get_superclasses(oksdbinterfaces::fmap<oksdbinterfaces::fset>& schema);
 
-    virtual void create(const std::string& at, const std::string& class_name, const std::string& id, ConfigObject& object);
-    virtual void create(const ConfigObject& at, const std::string& class_name, const std::string& id, ConfigObject& object);
-    virtual void destroy(ConfigObject& object);
+    virtual void create(const std::string& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object);
+    virtual void create(const oksdbinterfaces::ConfigObject& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object);
+    virtual void destroy(oksdbinterfaces::ConfigObject& object);
 
     virtual void open_db(const std::string& db_name);
     virtual void close_db() { close_database(true); }
@@ -74,7 +79,7 @@ class OksConfiguration : public ConfigurationImpl {
 
   protected:
 
-    void create(OksFile * at, const std::string& class_name, const std::string& id, ConfigObject& object);
+    void create(oks::OksFile * at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object);
 
   private:
 
@@ -85,39 +90,39 @@ class OksConfiguration : public ConfigurationImpl {
 
   public:
 
-    const OksKernel& get_oks_kernel() const { return *m_kernel; }  // required by Java oksconfig
+    const oks::OksKernel& get_oks_kernel() const { return *m_kernel; }  // required by Java oksconfig
 
 
   protected:
 
-    OksKernel * m_kernel;
-    ConfigurationImpl::notify m_fn;
-    ConfigurationImpl::pre_notify m_pre_fn;
+    oks::OksKernel * m_kernel;
+    oksdbinterfaces::ConfigurationImpl::notify m_fn;
+    oksdbinterfaces::ConfigurationImpl::pre_notify m_pre_fn;
     std::set<std::string> m_class_names;
     SMap m_objects;
     bool m_oks_kernel_silence;
     bool m_oks_kernel_no_repo;
 
-      // read OksKernel parameters from environment (silence mode)
+      // read oks::OksKernel parameters from environment (silence mode)
 
     void init_env();
 
 
-    OksConfigObject * new_object(OksObject * obj) noexcept;
+    OksConfigObject * new_object(oks::OksObject * obj) noexcept;
 
 
 
       // keep information about changed objects
 
-    std::list<OksObject *> m_created;
-    std::set<OksObject *> m_modified;
+    std::list<oks::OksObject *> m_created;
+    std::set<oks::OksObject *> m_modified;
     std::map<std::string, std::set<std::string> > m_removed;
 
     void subscribe();
 
-    static void create_notify(OksObject *, void *) noexcept;
-    static void change_notify(OksObject *, void *) noexcept;
-    static void delete_notify(OksObject *, void *) noexcept;
+    static void create_notify(oks::OksObject *, void *) noexcept;
+    static void change_notify(oks::OksObject *, void *) noexcept;
+    static void delete_notify(oks::OksObject *, void *) noexcept;
 
     OksConfigurationCheckDB * m_check_db_obj;
     std::thread * m_check_db_thread;
@@ -128,7 +133,7 @@ class OksConfiguration : public ConfigurationImpl {
 
       // keep information about created files
 
-    std::set<OksFile *> m_created_files;
+    std::set<oks::OksFile *> m_created_files;
 
 
       //
@@ -136,5 +141,8 @@ class OksConfiguration : public ConfigurationImpl {
     unsigned int m_repo_error_count;
 
 };
+
+} // namespace oksconfig
+} // namespace dunedaq
 
 #endif // OKSCONFIG_OKSCONFIGURATION_H_

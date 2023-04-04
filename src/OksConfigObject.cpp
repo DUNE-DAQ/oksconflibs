@@ -10,6 +10,9 @@
 
 #include "logging/Logging.hpp"
 
+using namespace dunedaq;
+using namespace dunedaq::oks;
+using namespace dunedaq::oksconfig;
 
 static std::string
 mk_error_text(const char *op, const char * what, const std::string& name, const OksObject * o, const char * error)
@@ -101,7 +104,7 @@ template<class T>
   }
 
 
-OksConfigObject::OksConfigObject(OksObject *obj, ConfigurationImpl * impl) noexcept :
+OksConfigObject::OksConfigObject(OksObject *obj, dunedaq::oksdbinterfaces::ConfigurationImpl * impl) noexcept :
   ConfigObjectImpl (impl, obj->GetId()),
   m_obj            (obj)
 {
@@ -226,7 +229,7 @@ OksConfigObject::get(const std::string& name, std::string& value)
 }
 
 void
-OksConfigObject::get(const std::string& name, ConfigObject& value)
+OksConfigObject::get(const std::string& name, dunedaq::oksdbinterfaces::ConfigObject& value)
 {
   OksData * data = 0;
 
@@ -392,7 +395,7 @@ OksConfigObject::get(const std::string& name, std::vector<std::string>& value)
 
 
 void
-OksConfigObject::get(const std::string& name, std::vector<ConfigObject>& value)
+OksConfigObject::get(const std::string& name, std::vector<dunedaq::oksdbinterfaces::ConfigObject>& value)
 {
   OksData * data = 0;
 
@@ -429,13 +432,13 @@ OksConfigObject::get(const std::string& name, std::vector<ConfigObject>& value)
         }
       else
         {
-          value.push_back(ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(it->data.OBJECT)));
+          value.push_back(oksdbinterfaces::ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(it->data.OBJECT)));
         }
     }
 }
 
 bool
-OksConfigObject::rel(const std::string& name, std::vector<ConfigObject>& value)
+OksConfigObject::rel(const std::string& name, std::vector<oksdbinterfaces::ConfigObject>& value)
 {
   std::lock_guard<std::mutex> scoped_lock(m_mutex);
 
@@ -453,7 +456,7 @@ OksConfigObject::rel(const std::string& name, std::vector<ConfigObject>& value)
                 {
                   if (data->data.OBJECT != nullptr)
                     {
-                      value.push_back(ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(data->data.OBJECT)));
+                      value.push_back(oksdbinterfaces::ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(data->data.OBJECT)));
                     }
                 }
               else if (data->type == OksData::list_type)
@@ -462,7 +465,7 @@ OksConfigObject::rel(const std::string& name, std::vector<ConfigObject>& value)
                     {
                       if (it->type == OksData::object_type)
                         {
-                          value.push_back(ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(it->data.OBJECT)));
+                          value.push_back(oksdbinterfaces::ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(it->data.OBJECT)));
                         }
                     }
                 }
@@ -480,7 +483,7 @@ OksConfigObject::rel(const std::string& name, std::vector<ConfigObject>& value)
 }
 
 void
-OksConfigObject::referenced_by(std::vector<ConfigObject>& value, const std::string& rname, bool check_composite_only, unsigned long /* rlevel */, const std::vector<std::string> * /* rclasses */) const
+OksConfigObject::referenced_by(std::vector<oksdbinterfaces::ConfigObject>& value, const std::string& rname, bool check_composite_only, unsigned long /* rlevel */, const std::vector<std::string> * /* rclasses */) const
 {
   value.clear();
 
@@ -497,7 +500,7 @@ OksConfigObject::referenced_by(std::vector<ConfigObject>& value, const std::stri
             {
               if (any_name || rname == i->relationship->get_name())
                 {
-                  value.push_back(ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(i->obj)));
+                  value.push_back(oksdbinterfaces::ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(i->obj)));
                 }
             }
         }
@@ -508,7 +511,7 @@ OksConfigObject::referenced_by(std::vector<ConfigObject>& value, const std::stri
         {
           for (const auto& i : *objs)
             {
-              value.push_back(ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(i)));
+              value.push_back(oksdbinterfaces::ConfigObject(static_cast<OksConfiguration *>(m_impl)->new_object(i)));
             }
 
           delete objs;
@@ -942,14 +945,14 @@ OksConfigObject::set_time(const std::string& name, const std::vector<std::string
 }
 
 void
-OksConfigObject::set(const std::string& name, const ConfigObject * value, bool skip_non_null_check)
+OksConfigObject::set(const std::string& name, const oksdbinterfaces::ConfigObject * value, bool skip_non_null_check)
 {
   OksData d((value != nullptr) ? static_cast<const OksConfigObject*>(value->implementation())->m_obj : (OksObject *) nullptr);
   set_rel_value(name, d, skip_non_null_check);
 }
 
 void
-OksConfigObject::set(const std::string& name, const std::vector<const ConfigObject*>& value, bool skip_non_null_check)
+OksConfigObject::set(const std::string& name, const std::vector<const oksdbinterfaces::ConfigObject*>& value, bool skip_non_null_check)
 {
   OksData d(new OksData::List());
 

@@ -5,6 +5,8 @@
 #include "oksdbinterfaces/ConfigObject.hpp"
 #include "oksdbinterfaces/Schema.hpp"
 
+using namespace dunedaq;
+using namespace dunedaq::oksdbinterfaces;
 
 static const char *
 all2string(bool direct)

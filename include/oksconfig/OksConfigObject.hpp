@@ -10,17 +10,20 @@
 
 #include "oksdbinterfaces/ConfigObjectImpl.hpp"
 
+namespace dunedaq {
+namespace oksconfig {
+
 class ConfigurationImpl;
 class OksConfiguration;
 
-class OksConfigObject :  public ConfigObjectImpl {
+  class OksConfigObject :  public oksdbinterfaces::ConfigObjectImpl {
 
   friend class ConfigurationImpl;
   friend class OksConfiguration;
 
   public:
 
-    OksConfigObject(OksObject *obj, ConfigurationImpl * impl) noexcept;
+    OksConfigObject(oks::OksObject *obj, oksdbinterfaces::ConfigurationImpl * impl) noexcept;
     virtual ~OksConfigObject() noexcept;
 
 
@@ -40,7 +43,7 @@ class OksConfigObject :  public ConfigObjectImpl {
     virtual void get(const std::string& name, float&          value);
     virtual void get(const std::string& name, double&         value);
     virtual void get(const std::string& name, std::string&    value);
-    virtual void get(const std::string& name, ConfigObject&   value);
+    virtual void get(const std::string& name, oksdbinterfaces::ConfigObject&   value);
 
     virtual void get(const std::string& name, std::vector<bool>&           value);
     virtual void get(const std::string& name, std::vector<uint8_t>&        value);
@@ -54,10 +57,10 @@ class OksConfigObject :  public ConfigObjectImpl {
     virtual void get(const std::string& name, std::vector<float>&          value);
     virtual void get(const std::string& name, std::vector<double>&         value);
     virtual void get(const std::string& name, std::vector<std::string>&    value);
-    virtual void get(const std::string& name, std::vector<ConfigObject>&   value);
+    virtual void get(const std::string& name, std::vector<oksdbinterfaces::ConfigObject>&   value);
 
-    virtual bool rel(const std::string& name, std::vector<ConfigObject>& value);
-    virtual void referenced_by(std::vector<ConfigObject>& value, const std::string& association, bool check_composite_only, unsigned long rlevel, const std::vector<std::string> * rclasses) const;
+    virtual bool rel(const std::string& name, std::vector<oksdbinterfaces::ConfigObject>& value);
+    virtual void referenced_by(std::vector<oksdbinterfaces::ConfigObject>& value, const std::string& association, bool check_composite_only, unsigned long rlevel, const std::vector<std::string> * rclasses) const;
 
 
     virtual void set(const std::string& name, bool                value);
@@ -98,8 +101,8 @@ class OksConfigObject :  public ConfigObjectImpl {
 
     virtual void set_class(const std::string& attribute, const std::vector<std::string>& value);
 
-    virtual void set(const std::string& name, const ConfigObject*                     value, bool skip_non_null_check);
-    virtual void set(const std::string& name, const std::vector<const ConfigObject*>& value, bool skip_non_null_check);
+    virtual void set(const std::string& name, const oksdbinterfaces::ConfigObject*                     value, bool skip_non_null_check);
+    virtual void set(const std::string& name, const std::vector<const oksdbinterfaces::ConfigObject*>& value, bool skip_non_null_check);
 
     virtual void move(const std::string& at);
     virtual void rename(const std::string& new_id);
@@ -110,7 +113,7 @@ class OksConfigObject :  public ConfigObjectImpl {
 
       // required by JNI
 
-    OksData::Type get_type(const std::string& attribute) const;
+    oks::OksData::Type get_type(const std::string& attribute) const;
 
 
     // helper functions
@@ -125,8 +128,8 @@ class OksConfigObject :  public ConfigObjectImpl {
 
       // set values in OKS database
 
-    void set_attr_value(const std::string& name, OksData& value);
-    void set_rel_value(const std::string& name, OksData& value, bool skip_non_null_check);
+    void set_attr_value(const std::string& name, oks::OksData& value);
+    void set_rel_value(const std::string& name, oks::OksData& value, bool skip_non_null_check);
 
     template<class T> void set_value(const std::string& name, const T& value);
     template<class T> void set_vector(const std::string& name, const std::vector<T>& value);
@@ -136,9 +139,9 @@ class OksConfigObject :  public ConfigObjectImpl {
 
 //    void test_checkout_needs();
 
-
+  public:
     // required by template method insert_object
-    void set(OksObject *obj)
+    void set(oks::OksObject *obj)
       {
         m_obj = obj;
       }
@@ -147,7 +150,10 @@ class OksConfigObject :  public ConfigObjectImpl {
 
   private:
 
-    OksObject *m_obj;
+    oks::OksObject *m_obj;
 };
+
+} // namespace oksconfig
+} // namespace dunedaq
 
 #endif // OKSCONFIG_OKSCONFIGOBJECT_H_

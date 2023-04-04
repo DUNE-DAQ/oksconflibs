@@ -4,6 +4,9 @@
 #include "oksdbinterfaces/Configuration.hpp"
 #include "oksdbinterfaces/ConfigObject.hpp"
 
+using namespace dunedaq;
+using namespace dunedaq::oksdbinterfaces;
+
 int main(int argc, char *argv[])
 {
   std::string dbname = "oksconfig:../test/okstest.data.xml:../test/test2.data.xml";
