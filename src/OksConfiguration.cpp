@@ -15,38 +15,38 @@
 #include "oks/relationship.hpp"
 #include "oksutils/oks/access.hpp"
 
-#include "oksdbinterfaces/Configuration.hpp"
-#include "oksdbinterfaces/ConfigObject.hpp"
-#include "oksdbinterfaces/Change.hpp"
-#include "oksdbinterfaces/Schema.hpp"
+#include "conffwk/Configuration.hpp"
+#include "conffwk/ConfigObject.hpp"
+#include "conffwk/Change.hpp"
+#include "conffwk/Schema.hpp"
 
-#include "oksconfig/OksConfiguration.hpp"
-#include "oksconfig/OksConfigObject.hpp"
+#include "oksconflibs/OksConfiguration.hpp"
+#include "oksconflibs/OksConfigObject.hpp"
 
 namespace dunedaq{
-  ERS_DECLARE_ISSUE( oksconfig, Exception, , )
+  ERS_DECLARE_ISSUE( oksconflibs, Exception, , )
 }
 using namespace dunedaq;
 using namespace dunedaq::oks;
-using namespace dunedaq::oksconfig;
+using namespace dunedaq::oksconflibs;
   // to be used as plug-in
 
-extern "C" oksdbinterfaces::ConfigurationImpl * _oksconfig_creator_ (const std::string& spec) {
+extern "C" conffwk::ConfigurationImpl * _oksconflibs_creator_ (const std::string& spec) {
   try {
     std::unique_ptr<OksConfiguration> impl(new OksConfiguration());
     if(!spec.empty()) { impl->open_db(spec); }
     return impl.release();
   }
-  catch(dunedaq::oksdbinterfaces::Exception & ex) {
-    throw dunedaq::oksdbinterfaces::Generic(ERS_HERE, "oksconfig initialization error", ex);
+  catch(dunedaq::conffwk::Exception & ex) {
+    throw dunedaq::conffwk::Generic(ERS_HERE, "oksconflibs initialization error", ex);
   }
   catch(...) {
-    throw dunedaq::oksdbinterfaces::Generic(ERS_HERE, "oksconfig initialization error:\n***** caught unknown exception *****");
+    throw dunedaq::conffwk::Generic(ERS_HERE, "oksconflibs initialization error:\n***** caught unknown exception *****");
   }
 }
 
 
-struct dunedaq::oksconfig::OksConfigurationCheckDB {
+struct dunedaq::oksconflibs::OksConfigurationCheckDB {
 
   OksConfiguration * m_db;
   bool m_run;
@@ -70,19 +70,19 @@ struct dunedaq::oksconfig::OksConfigurationCheckDB {
           {
             m_db->check_db();
           }
-        catch (dunedaq::oksdbinterfaces::Generic& ex)
+        catch (dunedaq::conffwk::Generic& ex)
           {
             m_db->m_check_db_thread = nullptr;
             m_db->m_check_db_obj = nullptr;
 
-            if (getenv("OKSCONFIG_NO_RELOAD_ABORT") != nullptr)
+            if (getenv("OKSCONFLIBS_NO_RELOAD_ABORT") != nullptr)
               {
-                ers::fatal(dunedaq::oksdbinterfaces::Generic( ERS_HERE, "database reload has failed, unsubscribing...", ex ) );
+                ers::fatal(dunedaq::conffwk::Generic( ERS_HERE, "database reload has failed, unsubscribing...", ex ) );
                 return;
               }
             else
               {
-                ers::fatal ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "database reload has failed, aborting...", ex ) );
+                ers::fatal ( dunedaq::conffwk::Generic( ERS_HERE, "database reload has failed, aborting...", ex ) );
                 abort();
               }
           }
@@ -212,13 +212,13 @@ OksConfiguration::open_db(const std::string& spec_params)
       std::ostringstream text;
       text << "cannot load file \'" << token << "\':\n" << e.what();
       close_db();
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
     }
     catch (...) {
       std::ostringstream text;
       text << "cannot load file \'" << token << '\'';
       close_db();
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
     }
   }
 }
@@ -246,11 +246,11 @@ OksConfiguration::close_database(bool call_unsubscribe)
     delete m_kernel;
     m_kernel = 0;
   }
-  catch(oksconfig::Exception& ex) {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "failed to close database", ex ) );
+  catch(oksconflibs::Exception& ex) {
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, "failed to close database", ex ) );
   }
   catch(std::exception& ex) {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "failed to close database", ex ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, "failed to close database", ex ) );
   }
 }
 
@@ -285,13 +285,13 @@ OksConfiguration::create(const std::string& db_name, const std::list<std::string
         std::ostringstream text;
         text << "cannot add and load include file \'" << *i << "\' to \'" << db_name << "\':\n" << e.what();
         close_db();
-        throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+        throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
       }
       catch (...) {
         std::ostringstream text;
         text << "cannot add and load include file \'" << *i << "\' to \'" << db_name << '\'';
         close_db();
-        throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+        throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
       }
     }
 
@@ -301,19 +301,19 @@ OksConfiguration::create(const std::string& db_name, const std::list<std::string
     close_db();
     std::ostringstream text;
     text << "cannot create new data file \'" << db_name << "\': " << ex.what();
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
   }
-  catch (dunedaq::oksdbinterfaces::Generic & ex) {
+  catch (dunedaq::conffwk::Generic & ex) {
     close_db();
     std::ostringstream text;
     text << "cannot create new data file \'" << db_name << "\'";
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str(), ex ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str(), ex ) );
   }
   catch (...) {
     close_db();
     std::ostringstream text;
     text << "cannot create new data file \'" << db_name << '\'';
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
   }
 }
 
@@ -358,7 +358,7 @@ static void throw_update_exception(const OksFile * file_h, const char * action, 
 {
   std::ostringstream text;
   text << "cannot " << action << " file \'" << file_h->get_full_file_name() << "\' since " << reason;
-  throw dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() );
+  throw dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() );
 }
 
 void
@@ -370,7 +370,7 @@ OksConfiguration::commit(const std::string& log_message)
     }
   catch (oks::exception &ex)
     {
-      throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, ex.what()));
+      throw(dunedaq::conffwk::Generic( ERS_HERE, ex.what()));
     }
 
   const bool commit2repo(!m_kernel->get_user_repository_root().empty() && m_kernel->is_user_repository_created());
@@ -402,7 +402,7 @@ OksConfiguration::commit(const std::string& log_message)
             {
               std::ostringstream text;
               text << "cannot save updated data file \'" << *(i.first) << "\':\n" << ex.what();
-              throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str()));
+              throw(dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str()));
             }
         }
     }
@@ -415,7 +415,7 @@ OksConfiguration::commit(const std::string& log_message)
         }
       catch (oks::exception &ex)
         {
-          throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, ex.what()));
+          throw(dunedaq::conffwk::Generic( ERS_HERE, ex.what()));
         }
     }
 
@@ -423,7 +423,7 @@ OksConfiguration::commit(const std::string& log_message)
 }
 
 namespace dunedaq{
-  namespace oksconfig{
+  namespace oksconflibs{
 class ResubscribeGuard {
 
   public:
@@ -475,7 +475,7 @@ OksConfiguration::abort()
         {
           std::ostringstream text;
           text << "abort changes failed since cannot erase created file \'" << file_name << "\'; unlink failed with code " << result << ": " << dunedaq::oks::strerror(errno);
-          throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+          throw(dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
         }
     }
 
@@ -506,7 +506,7 @@ OksConfiguration::abort()
         {
           std::ostringstream text;
           text << "failed to get differences between revisions " << m_kernel->get_repository_version() << " and origin/master: " << ex.what() << '\n';
-          throw(dunedaq::oksdbinterfaces::Generic(ERS_HERE, text.str().c_str(), ex));
+          throw(dunedaq::conffwk::Generic(ERS_HERE, text.str().c_str(), ex));
         }
     }
 
@@ -521,20 +521,20 @@ OksConfiguration::abort()
         }
       catch (oks::exception & ex)
         {
-          throw(dunedaq::oksdbinterfaces::Generic(ERS_HERE, "cannot reload updated data files", ex));
+          throw(dunedaq::conffwk::Generic(ERS_HERE, "cannot reload updated data files", ex));
         }
       catch (...)
         {
-          throw(dunedaq::oksdbinterfaces::Generic(ERS_HERE, "cannot reload updated data files"));
+          throw(dunedaq::conffwk::Generic(ERS_HERE, "cannot reload updated data files"));
         }
     }
 }
 
 
-static std::vector<dunedaq::oksdbinterfaces::Version>
+static std::vector<dunedaq::conffwk::Version>
 oks2config(const std::vector<OksRepositoryVersion>& in)
 {
-  std::vector<dunedaq::oksdbinterfaces::Version> out;
+  std::vector<dunedaq::conffwk::Version> out;
   out.reserve(in.size());
 
   for (auto& x : in)
@@ -543,7 +543,7 @@ oks2config(const std::vector<OksRepositoryVersion>& in)
   return out;
 }
 
-std::vector<dunedaq::oksdbinterfaces::Version>
+std::vector<dunedaq::conffwk::Version>
 OksConfiguration::get_changes()
 {
   if (!m_kernel->get_repository_root().empty())
@@ -554,12 +554,12 @@ OksConfiguration::get_changes()
         }
       catch (const oks::exception& ex)
         {
-          throw(dunedaq::oksdbinterfaces::Generic(ERS_HERE, "cannot get new versions", ex));
+          throw(dunedaq::conffwk::Generic(ERS_HERE, "cannot get new versions", ex));
         }
     }
   else
     {
-      std::vector<dunedaq::oksdbinterfaces::Version> out;
+      std::vector<dunedaq::conffwk::Version> out;
 
       std::set<OksFile *> oks_files;
       m_kernel->get_modified_files(oks_files, oks_files, "");
@@ -579,32 +579,32 @@ OksConfiguration::get_changes()
 }
 
 
-std::vector<dunedaq::oksdbinterfaces::Version>
-OksConfiguration::get_versions(const std::string& since, const std::string& until, dunedaq::oksdbinterfaces::Version::QueryType type, bool skip_irrelevant)
+std::vector<dunedaq::conffwk::Version>
+OksConfiguration::get_versions(const std::string& since, const std::string& until, dunedaq::conffwk::Version::QueryType type, bool skip_irrelevant)
 {
   if (!m_kernel->get_repository_root().empty())
     {
       try
         {
-          return oks2config(type == dunedaq::oksdbinterfaces::Version::query_by_date ? m_kernel->get_repository_versions_by_date(skip_irrelevant, since, until) : m_kernel->get_repository_versions_by_hash(skip_irrelevant, since, until));
+          return oks2config(type == dunedaq::conffwk::Version::query_by_date ? m_kernel->get_repository_versions_by_date(skip_irrelevant, since, until) : m_kernel->get_repository_versions_by_hash(skip_irrelevant, since, until));
         }
       catch (const oks::exception& ex)
         {
-          throw(dunedaq::oksdbinterfaces::Generic(ERS_HERE, "cannot get repository versions", ex));
+          throw(dunedaq::conffwk::Generic(ERS_HERE, "cannot get repository versions", ex));
         }
     }
   else
     {
-      throw(dunedaq::oksdbinterfaces::Generic(ERS_HERE, "cannot get versions, repository is not set"));
+      throw(dunedaq::conffwk::Generic(ERS_HERE, "cannot get versions, repository is not set"));
     }
 }
 
 }}
 
-dunedaq::oksconfig::OksConfigObject *
-dunedaq::oksconfig::OksConfiguration::new_object(oks::OksObject * obj) noexcept
+dunedaq::oksconflibs::OksConfigObject *
+dunedaq::oksconflibs::OksConfiguration::new_object(oks::OksObject * obj) noexcept
 {
-  return insert_object<dunedaq::oksconfig::OksConfigObject>(obj, obj->GetId(), obj->GetClass()->get_name());
+  return insert_object<dunedaq::oksconflibs::OksConfigObject>(obj, obj->GetId(), obj->GetClass()->get_name());
 }
 
 bool
@@ -633,8 +633,8 @@ OksConfiguration::test_object(const std::string& class_name, const std::string& 
 }
 
 void
-dunedaq::oksconfig::OksConfiguration::get(const std::string &class_name, const std::string &name,
-                                          dunedaq::oksdbinterfaces::ConfigObject &object, unsigned long /*rlevel*/, const std::vector<std::string>* /* rclasses */)
+dunedaq::oksconflibs::OksConfiguration::get(const std::string &class_name, const std::string &name,
+                                          dunedaq::conffwk::ConfigObject &object, unsigned long /*rlevel*/, const std::vector<std::string>* /* rclasses */)
 {
   if (OksClass * cl = m_kernel->find_class(class_name))
     {
@@ -654,7 +654,7 @@ dunedaq::oksconfig::OksConfiguration::get(const std::string &class_name, const s
           if (obj == nullptr)
             {
               const std::string id(name + '@' + class_name);
-              throw dunedaq::oksdbinterfaces::NotFound(ERS_HERE, "object", id.c_str());
+              throw dunedaq::conffwk::NotFound(ERS_HERE, "object", id.c_str());
             }
         }
 
@@ -662,12 +662,12 @@ dunedaq::oksconfig::OksConfiguration::get(const std::string &class_name, const s
     }
   else
     {
-      throw dunedaq::oksdbinterfaces::NotFound(ERS_HERE, "class", class_name.c_str());
+      throw dunedaq::conffwk::NotFound(ERS_HERE, "class", class_name.c_str());
     }
 }
 
 void
-OksConfiguration::get(const std::string& class_name, std::vector<oksdbinterfaces::ConfigObject>& objects, const std::string& query, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
+OksConfiguration::get(const std::string& class_name, std::vector<conffwk::ConfigObject>& objects, const std::string& query, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
 {
   if(OksClass * cl = m_kernel->find_class(class_name)) {
     objects.clear();
@@ -683,14 +683,14 @@ OksConfiguration::get(const std::string& class_name, std::vector<oksdbinterfaces
         if(qe->good() == false) {
           std::ostringstream text;
           text << "bad query syntax \"" << query << "\" in scope of class \"" << class_name << '\"';
-          throw dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str());
+          throw dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str());
         }
         objs = cl->execute_query(qe.get());  // FIXME: check .get()
       }
       catch(oks::exception& ex) {
         std::ostringstream text;
         text << "failed to execute query:\n" << ex.what();
-        throw dunedaq::oksdbinterfaces::Generic(ERS_HERE, text.str().c_str());
+        throw dunedaq::conffwk::Generic(ERS_HERE, text.str().c_str());
       }
     }
 
@@ -702,15 +702,15 @@ OksConfiguration::get(const std::string& class_name, std::vector<oksdbinterfaces
     }
   }
   else {
-    throw dunedaq::oksdbinterfaces::NotFound(ERS_HERE, "class", class_name.c_str());
+    throw dunedaq::conffwk::NotFound(ERS_HERE, "class", class_name.c_str());
   }
 }
 
 void
-OksConfiguration::get(const oksdbinterfaces::ConfigObject& obj_from, const std::string& query, std::vector<oksdbinterfaces::ConfigObject>& objects, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
+OksConfiguration::get(const conffwk::ConfigObject& obj_from, const std::string& query, std::vector<conffwk::ConfigObject>& objects, unsigned long /*rlevel*/, const std::vector<std::string> * /* rclasses */)
 {
   if(obj_from.is_null()) {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "parameter \'obj_from\' is (null)" ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, "parameter \'obj_from\' is (null)" ) );
   }
 
   OksObject * o = (static_cast<const OksConfigObject *>(obj_from.implementation()))->m_obj;
@@ -727,21 +727,21 @@ OksConfiguration::get(const oksdbinterfaces::ConfigObject& obj_from, const std::
   catch ( oks::bad_query_syntax& e ) {
     std::ostringstream text;
     text << "bad path-query \"" << query << "\" to object " << o;
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
   }
 }
 
 
-dunedaq::oksdbinterfaces::class_t *
+dunedaq::conffwk::class_t *
 OksConfiguration::get(const std::string& class_name, bool direct_only)
 {
   OksClass * c = m_kernel->find_class(class_name);
 
   if(c == 0) {
-    throw dunedaq::oksdbinterfaces::NotFound(ERS_HERE, "class", class_name.c_str());
+    throw dunedaq::conffwk::NotFound(ERS_HERE, "class", class_name.c_str());
   }
 
-  dunedaq::oksdbinterfaces::class_t * d = new dunedaq::oksdbinterfaces::class_t(c->get_name(), c->get_description(), c->get_is_abstract());
+  dunedaq::conffwk::class_t * d = new dunedaq::conffwk::class_t(c->get_name(), c->get_description(), c->get_is_abstract());
 
   if(direct_only) {
     if(const std::list<std::string *> * classes = c->direct_super_classes()) {
@@ -771,34 +771,34 @@ OksConfiguration::get(const std::string& class_name, bool direct_only)
       OksAttribute::Format format = i->get_format();
       OksData::Type type = i->get_data_type();
 
-      const_cast< std::vector<dunedaq::oksdbinterfaces::attribute_t>& >(d->p_attributes).push_back(
-        dunedaq::oksdbinterfaces::attribute_t(
+      const_cast< std::vector<dunedaq::conffwk::attribute_t>& >(d->p_attributes).push_back(
+        dunedaq::conffwk::attribute_t(
 	  i->get_name(),
           (
-	    type == OksData::string_type  ? dunedaq::oksdbinterfaces::string_type :
-	    type == OksData::enum_type    ? dunedaq::oksdbinterfaces::enum_type   :
-	    type == OksData::bool_type    ? dunedaq::oksdbinterfaces::bool_type   :
-	    type == OksData::s8_int_type  ? dunedaq::oksdbinterfaces::s8_type     :
-	    type == OksData::u8_int_type  ? dunedaq::oksdbinterfaces::u8_type     :
-	    type == OksData::s16_int_type ? dunedaq::oksdbinterfaces::s16_type    :
-	    type == OksData::u16_int_type ? dunedaq::oksdbinterfaces::u16_type    :
-	    type == OksData::s32_int_type ? dunedaq::oksdbinterfaces::s32_type    :
-	    type == OksData::u32_int_type ? dunedaq::oksdbinterfaces::u32_type    :
-	    type == OksData::s64_int_type ? dunedaq::oksdbinterfaces::s64_type    :
-	    type == OksData::u64_int_type ? dunedaq::oksdbinterfaces::u64_type    :
-	    type == OksData::float_type   ? dunedaq::oksdbinterfaces::float_type  :
-	    type == OksData::double_type  ? dunedaq::oksdbinterfaces::double_type :
-	    type == OksData::date_type    ? dunedaq::oksdbinterfaces::date_type   :
-	    type == OksData::time_type    ? dunedaq::oksdbinterfaces::time_type   :
-	    dunedaq::oksdbinterfaces::class_type
+	    type == OksData::string_type  ? dunedaq::conffwk::string_type :
+	    type == OksData::enum_type    ? dunedaq::conffwk::enum_type   :
+	    type == OksData::bool_type    ? dunedaq::conffwk::bool_type   :
+	    type == OksData::s8_int_type  ? dunedaq::conffwk::s8_type     :
+	    type == OksData::u8_int_type  ? dunedaq::conffwk::u8_type     :
+	    type == OksData::s16_int_type ? dunedaq::conffwk::s16_type    :
+	    type == OksData::u16_int_type ? dunedaq::conffwk::u16_type    :
+	    type == OksData::s32_int_type ? dunedaq::conffwk::s32_type    :
+	    type == OksData::u32_int_type ? dunedaq::conffwk::u32_type    :
+	    type == OksData::s64_int_type ? dunedaq::conffwk::s64_type    :
+	    type == OksData::u64_int_type ? dunedaq::conffwk::u64_type    :
+	    type == OksData::float_type   ? dunedaq::conffwk::float_type  :
+	    type == OksData::double_type  ? dunedaq::conffwk::double_type :
+	    type == OksData::date_type    ? dunedaq::conffwk::date_type   :
+	    type == OksData::time_type    ? dunedaq::conffwk::time_type   :
+	    dunedaq::conffwk::class_type
 	  ),
           i->get_range(),
 	  (
-	    i->is_integer() == false ? dunedaq::oksdbinterfaces::na_int_format :
+	    i->is_integer() == false ? dunedaq::conffwk::na_int_format :
 	      (
-	        format == OksAttribute::Dec ? dunedaq::oksdbinterfaces::dec_int_format :
-	        format == OksAttribute::Hex ? dunedaq::oksdbinterfaces::hex_int_format :
-	        dunedaq::oksdbinterfaces::oct_int_format
+	        format == OksAttribute::Dec ? dunedaq::conffwk::dec_int_format :
+	        format == OksAttribute::Hex ? dunedaq::conffwk::hex_int_format :
+	        dunedaq::conffwk::oct_int_format
 	      )
 	  ),
           i->get_is_no_null(),
@@ -813,8 +813,8 @@ OksConfiguration::get(const std::string& class_name, bool direct_only)
 
   if(const std::list<OksRelationship *> * rels = (direct_only ? c->direct_relationships() : c->all_relationships())) {
     for(const auto& i : *rels) {
-      const_cast< std::vector<dunedaq::oksdbinterfaces::relationship_t>& >(d->p_relationships).push_back(
-        dunedaq::oksdbinterfaces::relationship_t(
+      const_cast< std::vector<dunedaq::conffwk::relationship_t>& >(d->p_relationships).push_back(
+        dunedaq::conffwk::relationship_t(
           i->get_name(),
           i->get_type(),
           (i->get_low_cardinality_constraint() == OksRelationship::Zero),
@@ -830,26 +830,26 @@ OksConfiguration::get(const std::string& class_name, bool direct_only)
 }
 
 void
-OksConfiguration::get_superclasses(oksdbinterfaces::fmap<oksdbinterfaces::fset>& schema)
+OksConfiguration::get_superclasses(conffwk::fmap<conffwk::fset>& schema)
 {
   schema.clear();
 
   if(!m_kernel) {
-    return; // throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "database is not loaded" ) );
+    return; // throw ( dunedaq::conffwk::Generic( ERS_HERE, "database is not loaded" ) );
   }
 
   schema.reserve(m_kernel->classes().size() * 3);
 
   for(OksClass::Map::const_iterator i = m_kernel->classes().begin(); i != m_kernel->classes().end(); ++i) {
     if(const OksClass::FList * scl = i->second->all_super_classes()) {
-      const std::string* name = &oksdbinterfaces::DalFactory::instance().get_known_class_name_ref(i->second->get_name());
+      const std::string* name = &conffwk::DalFactory::instance().get_known_class_name_ref(i->second->get_name());
 
       auto& subclasses = schema[name];
 
       if(!scl->empty()) {
         subclasses.reserve(scl->size() * 3);
         for(OksClass::FList::const_iterator j = scl->begin(); j != scl->end(); ++j) {
-          subclasses.insert(&oksdbinterfaces::DalFactory::instance().get_known_class_name_ref((*j)->get_name()));
+          subclasses.insert(&conffwk::DalFactory::instance().get_known_class_name_ref((*j)->get_name()));
         }
       }
     }
@@ -858,13 +858,13 @@ OksConfiguration::get_superclasses(oksdbinterfaces::fmap<oksdbinterfaces::fset>&
 
 
 void
-OksConfiguration::create(OksFile * at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object)
+OksConfiguration::create(OksFile * at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object)
 {
   try {
     m_kernel->set_active_data(at);
   }
   catch(oks::exception& ex) {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, ex.what()) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, ex.what()) );
   }
 
   OksClass * c = m_kernel->find_class(class_name);
@@ -872,13 +872,13 @@ OksConfiguration::create(OksFile * at, const std::string& class_name, const std:
   if(c == nullptr) {
     std::ostringstream text;
     text << "cannot find class \"" << class_name << '\"';
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
   }
   else if(id.empty() == false) {
     if(OksObject * obj = c->get_object(id)) {
       std::ostringstream text;
       text << "object \"" << id << '@' << class_name << "\" already exists in file \"" << obj->get_file()->get_full_file_name() << '\"';
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
     }
   }
 
@@ -893,15 +893,15 @@ OksConfiguration::create(OksFile * at, const std::string& class_name, const std:
   }
   catch(oks::exception& ex)
   {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "cannot create configuration object", ex ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, "cannot create configuration object", ex ) );
   }
 }
 
 void
-OksConfiguration::create(const std::string& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object)
+OksConfiguration::create(const std::string& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object)
 {
   if(at.empty() == true) {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "parameter \'at\' (i.e. filename) cannot be empty" ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, "parameter \'at\' (i.e. filename) cannot be empty" ) );
   }
 
   if(OksFile * h = m_kernel->find_data_file(at)) {
@@ -910,12 +910,12 @@ OksConfiguration::create(const std::string& at, const std::string& class_name, c
   else {
     std::ostringstream text;
     text << "file \"" << at << "\" is not loaded";
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
   }
 }
 
 void
-OksConfiguration::create(const oksdbinterfaces::ConfigObject& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object)
+OksConfiguration::create(const conffwk::ConfigObject& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object)
 {
   create((static_cast<const OksConfigObject *>(at.implementation()))->m_obj->get_file(), class_name, id, object);
 }
@@ -971,7 +971,7 @@ InheritanceData::InheritanceData(const OksKernel &kernel)
    */
 
 static void
-check(std::vector<oksdbinterfaces::ConfigurationChange *>& changes,
+check(std::vector<conffwk::ConfigurationChange *>& changes,
       const InheritanceData & inheritance,
       const std::set<std::string>& class_names,
       const OksConfiguration::SMap & objects,
@@ -996,7 +996,7 @@ check(std::vector<oksdbinterfaces::ConfigurationChange *>& changes,
       std::set<std::string>::const_iterator i = omi->second.find(obj_id);
 
       if(i != omi->second.end()) {
-        oksdbinterfaces::ConfigurationChange::add(changes, obj_class, obj_id, action);
+        conffwk::ConfigurationChange::add(changes, obj_class, obj_id, action);
       }
     }
   }
@@ -1006,7 +1006,7 @@ check(std::vector<oksdbinterfaces::ConfigurationChange *>& changes,
 
   if(action == '+' || omi == objects.end()) {
     if(any || class_names.find(obj_class) != class_names.end()) {
-      oksdbinterfaces::ConfigurationChange::add(changes, obj_class, obj_id, action);
+      conffwk::ConfigurationChange::add(changes, obj_class, obj_id, action);
     }
   }
 
@@ -1033,7 +1033,7 @@ check(std::vector<oksdbinterfaces::ConfigurationChange *>& changes,
 	  omi->second.find(obj_id) != omi->second.end()
 	)
       ) {
-        oksdbinterfaces::ConfigurationChange::add(changes, *j, obj_id, action);
+        conffwk::ConfigurationChange::add(changes, *j, obj_id, action);
       }
     }
   }
@@ -1074,7 +1074,7 @@ class DestroyGuard2 {
 
 
 void
-OksConfiguration::destroy(oksdbinterfaces::ConfigObject& obj)
+OksConfiguration::destroy(conffwk::ConfigObject& obj)
 {
   OksObject * o((static_cast<const OksConfigObject *>(obj.implementation()))->m_obj);
 
@@ -1088,11 +1088,11 @@ OksConfiguration::destroy(oksdbinterfaces::ConfigObject& obj)
     OksObject::destroy(o);
   }
   catch(oks::exception& ex) {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, ex.what()) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, ex.what()) );
   }
 
   if(m_conf) {
-    std::vector<oksdbinterfaces::ConfigurationChange *> changes;
+    std::vector<conffwk::ConfigurationChange *> changes;
 
     for(SMap::iterator i = m_removed.begin(); i != m_removed.end(); ++i) {
       for(std::set<std::string>::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
@@ -1102,7 +1102,7 @@ OksConfiguration::destroy(oksdbinterfaces::ConfigObject& obj)
 
     if(!changes.empty()) {
       m_conf->update_cache(changes);
-      oksdbinterfaces::ConfigurationChange::clear(changes);
+      conffwk::ConfigurationChange::clear(changes);
     }
   }
 }
@@ -1127,12 +1127,12 @@ OksConfiguration::is_writable(const std::string& db_name)
         {
           std::ostringstream text;
           text << "cannot check access status of file \'" << db_name << "\': " << ex.what();
-          throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+          throw ( dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
         }
     }
   else
     {
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
     }
 }
 
@@ -1153,18 +1153,18 @@ OksConfiguration::add_include(const std::string& db_name, const std::string& inc
     try {
       h->add_include_file(include);
     }
-    catch(dunedaq::oksdbinterfaces::Generic& ex) {
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_add_include_error_text(db_name, include).c_str() ), ex );
+    catch(dunedaq::conffwk::Generic& ex) {
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_add_include_error_text(db_name, include).c_str() ), ex );
     }
     catch (oks::exception & ex) {
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_add_include_error_text(db_name, include, ex.what()).c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_add_include_error_text(db_name, include, ex.what()).c_str() ) );
     }
     catch (...) {
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_add_include_error_text(db_name, include).c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_add_include_error_text(db_name, include).c_str() ) );
     }
   }
   else {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
   }
 }
 
@@ -1181,21 +1181,21 @@ OksConfiguration::remove_include(const std::string& db_name, const std::string& 
       DestroyGuard1 dg1(*m_kernel); // => on exit from try block, call m_kernel->subscribe_delete_object(0, 0);
       h->remove_include_file(include);
     }
-    catch(dunedaq::oksdbinterfaces::Generic& ex) {
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_rm_include_error_text(db_name, include).c_str() ), ex );
+    catch(dunedaq::conffwk::Generic& ex) {
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_rm_include_error_text(db_name, include).c_str() ), ex );
     }
     catch (oks::exception & ex) {
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_rm_include_error_text(db_name, include, ex.what()).c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_rm_include_error_text(db_name, include, ex.what()).c_str() ) );
     }
     catch (...) {
-      throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_rm_include_error_text(db_name, include).c_str() ) );
+      throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_rm_include_error_text(db_name, include).c_str() ) );
     }
   }
   else {
-    throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
+    throw ( dunedaq::conffwk::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
   }
 
-  std::vector<oksdbinterfaces::ConfigurationChange *> changes;
+  std::vector<conffwk::ConfigurationChange *> changes;
 
   for(SMap::iterator i = m_removed.begin(); i != m_removed.end(); ++i) {
     for(std::set<std::string>::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
@@ -1205,7 +1205,7 @@ OksConfiguration::remove_include(const std::string& db_name, const std::string& 
 
   if(!changes.empty()) {
     m_conf->update_cache(changes);
-    oksdbinterfaces::ConfigurationChange::clear(changes);
+    conffwk::ConfigurationChange::clear(changes);
   }
 }
 
@@ -1232,7 +1232,7 @@ OksConfiguration::get_includes(const std::string& db_name, std::list<std::string
         }
       else
         {
-          throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
+          throw(dunedaq::conffwk::Generic( ERS_HERE, mk_no_file_error_text(db_name).c_str() ) );
         }
     }
 }
@@ -1256,13 +1256,13 @@ OksConfiguration::check_db()
         {
           std::ostringstream text;
           text << "cannot get modified repository files (attempt " << ++m_repo_error_count << "): " << ex.what();
-          ers::error(dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+          ers::error(dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
         }
       catch(const oks::exception& ex)
         {
           std::ostringstream text;
           text << "cannot get modified files: " << ex.what();
-          throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+          throw(dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
         }
 
       for (const auto& x : ufs)
@@ -1271,7 +1271,7 @@ OksConfiguration::check_db()
             {
               std::ostringstream text;
               text << "reload of schema files is not supported (\'" << x->get_well_formed_name() << "\')";
-              throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+              throw(dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
             }
         }
 
@@ -1298,13 +1298,13 @@ OksConfiguration::check_db()
               m_fn = 0;
               std::ostringstream text;
               text << "failed to reload updated files:\n" << ex.what();
-              throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, text.str().c_str() ) );
+              throw(dunedaq::conffwk::Generic( ERS_HERE, text.str().c_str() ) );
             }
           catch (...)
             {
               close_database(false);
               m_fn = 0;
-              throw ( dunedaq::oksdbinterfaces::Generic( ERS_HERE, "failed to reload updated files" ) );
+              throw ( dunedaq::conffwk::Generic( ERS_HERE, "failed to reload updated files" ) );
             }
 
 
@@ -1312,7 +1312,7 @@ OksConfiguration::check_db()
           m_kernel->subscribe_change_object(0, 0);
           m_kernel->subscribe_delete_object(0, 0);
 
-          std::vector<oksdbinterfaces::ConfigurationChange *> changes;
+          std::vector<conffwk::ConfigurationChange *> changes;
 
             {
               for (auto& i : m_created)
@@ -1355,7 +1355,7 @@ OksConfiguration::check_db()
           if (!changes.empty())
             {
               (*m_fn)(changes, m_conf);
-              oksdbinterfaces::ConfigurationChange::clear(changes);
+              conffwk::ConfigurationChange::clear(changes);
             }
 
           m_created.clear();
@@ -1365,7 +1365,7 @@ OksConfiguration::check_db()
     }
   else
     {
-      throw(dunedaq::oksdbinterfaces::Generic( ERS_HERE, "no subscription has been done" ) );
+      throw(dunedaq::conffwk::Generic( ERS_HERE, "no subscription has been done" ) );
     }
 }
 
@@ -1437,5 +1437,5 @@ OksConfiguration::print_profiling_info() noexcept
 void
 OksConfiguration::init_env()
 {
-  m_oks_kernel_silence = (getenv("OKSCONFIG_NO_KERNEL_SILENCE") == nullptr);
+  m_oks_kernel_silence = (getenv("OKSCONFLIBS_NO_KERNEL_SILENCE") == nullptr);
 }

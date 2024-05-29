@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "oksdbinterfaces/Configuration.hpp"
-#include "oksdbinterfaces/ConfigObject.hpp"
-#include "oksdbinterfaces/Schema.hpp"
+#include "conffwk/Configuration.hpp"
+#include "conffwk/ConfigObject.hpp"
+#include "conffwk/Schema.hpp"
 
 using namespace dunedaq;
-using namespace dunedaq::oksdbinterfaces;
+using namespace dunedaq::conffwk;
 
 static const char *
 all2string(bool direct)
@@ -17,7 +17,7 @@ all2string(bool direct)
 static void
 show_info(Configuration& config, const char * name, bool direct)
 {
-  const dunedaq::oksdbinterfaces::class_t& c = config.get_class_info(name, direct);
+  const dunedaq::conffwk::class_t& c = config.get_class_info(name, direct);
 
   std::cout << "class " << c.p_name << std::endl;
 
@@ -229,7 +229,7 @@ static void check_enums(Configuration& config)
 int
 main(int argc, char *argv[])
 {
-  std::string dbname = "oksconfig:../../oksconfig/test/okstest.data.xml:../../oksconfig/test/test2.data.xml";
+  std::string dbname = "oksconflibs:../../oksconflibs/test/okstest.data.xml:../../oksconflibs/test/test2.data.xml";
 
   if (argc != 1)
     dbname = argv[1];

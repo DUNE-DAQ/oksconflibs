@@ -1,6 +1,6 @@
 // this is -*- c++ -*-
-#ifndef OKSCONFIG_OKSCONFIGOBJECT_H_
-#define OKSCONFIG_OKSCONFIGOBJECT_H_
+#ifndef OKSCONFLIBS_OKSCONFLIBSOBJECT_H_
+#define OKSCONFLIBS_OKSCONFLIBSOBJECT_H_
 
 #include <string>
 #include <vector>
@@ -8,22 +8,22 @@
 #include "oks/kernel.hpp"
 #include "oks/object.hpp"
 
-#include "oksdbinterfaces/ConfigObjectImpl.hpp"
+#include "conffwk/ConfigObjectImpl.hpp"
 
 namespace dunedaq {
-namespace oksconfig {
+namespace oksconflibs {
 
 class ConfigurationImpl;
 class OksConfiguration;
 
-  class OksConfigObject :  public oksdbinterfaces::ConfigObjectImpl {
+  class OksConfigObject :  public conffwk::ConfigObjectImpl {
 
   friend class ConfigurationImpl;
   friend class OksConfiguration;
 
   public:
 
-    OksConfigObject(oks::OksObject *obj, oksdbinterfaces::ConfigurationImpl * impl) noexcept;
+    OksConfigObject(oks::OksObject *obj, conffwk::ConfigurationImpl * impl) noexcept;
     virtual ~OksConfigObject() noexcept;
 
 
@@ -43,7 +43,7 @@ class OksConfiguration;
     virtual void get(const std::string& name, float&          value);
     virtual void get(const std::string& name, double&         value);
     virtual void get(const std::string& name, std::string&    value);
-    virtual void get(const std::string& name, oksdbinterfaces::ConfigObject&   value);
+    virtual void get(const std::string& name, conffwk::ConfigObject&   value);
 
     virtual void get(const std::string& name, std::vector<bool>&           value);
     virtual void get(const std::string& name, std::vector<uint8_t>&        value);
@@ -57,10 +57,10 @@ class OksConfiguration;
     virtual void get(const std::string& name, std::vector<float>&          value);
     virtual void get(const std::string& name, std::vector<double>&         value);
     virtual void get(const std::string& name, std::vector<std::string>&    value);
-    virtual void get(const std::string& name, std::vector<oksdbinterfaces::ConfigObject>&   value);
+    virtual void get(const std::string& name, std::vector<conffwk::ConfigObject>&   value);
 
-    virtual bool rel(const std::string& name, std::vector<oksdbinterfaces::ConfigObject>& value);
-    virtual void referenced_by(std::vector<oksdbinterfaces::ConfigObject>& value, const std::string& association, bool check_composite_only, unsigned long rlevel, const std::vector<std::string> * rclasses) const;
+    virtual bool rel(const std::string& name, std::vector<conffwk::ConfigObject>& value);
+    virtual void referenced_by(std::vector<conffwk::ConfigObject>& value, const std::string& association, bool check_composite_only, unsigned long rlevel, const std::vector<std::string> * rclasses) const;
 
 
     virtual void set(const std::string& name, bool                value);
@@ -101,8 +101,8 @@ class OksConfiguration;
 
     virtual void set_class(const std::string& attribute, const std::vector<std::string>& value);
 
-    virtual void set(const std::string& name, const oksdbinterfaces::ConfigObject*                     value, bool skip_non_null_check);
-    virtual void set(const std::string& name, const std::vector<const oksdbinterfaces::ConfigObject*>& value, bool skip_non_null_check);
+    virtual void set(const std::string& name, const conffwk::ConfigObject*                     value, bool skip_non_null_check);
+    virtual void set(const std::string& name, const std::vector<const conffwk::ConfigObject*>& value, bool skip_non_null_check);
 
     virtual void move(const std::string& at);
     virtual void rename(const std::string& new_id);
@@ -153,7 +153,7 @@ class OksConfiguration;
     oks::OksObject *m_obj;
 };
 
-} // namespace oksconfig
+} // namespace oksconflibs
 } // namespace dunedaq
 
-#endif // OKSCONFIG_OKSCONFIGOBJECT_H_
+#endif // OKSCONFLIBS_OKSCONFLIBSOBJECT_H_
