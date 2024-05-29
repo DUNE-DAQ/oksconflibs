@@ -1,6 +1,6 @@
 // this is -*- c++ -*-
-#ifndef OKSCONFIG_OKSCONFIGURATION_H_
-#define OKSCONFIG_OKSCONFIGURATION_H_
+#ifndef OKSCONFLIBS_OKSCONFLIBSURATION_H_
+#define OKSCONFLIBS_OKSCONFLIBSURATION_H_
 
 //
 // $Id$
@@ -11,7 +11,7 @@
 #include <set>
 #include <thread>
 
-#include "oksdbinterfaces/ConfigurationImpl.hpp"
+#include "conffwk/ConfigurationImpl.hpp"
 
 namespace dunedaq {
 namespace oks {
@@ -22,14 +22,14 @@ namespace oks {
   class OksFile;
 }
 
-namespace oksconfig {
+namespace oksconflibs {
 
   // forward declaration 
 class OksConfigObject;
 struct OksConfigurationCheckDB;
 
 
-class OksConfiguration : public oksdbinterfaces::ConfigurationImpl {
+class OksConfiguration : public conffwk::ConfigurationImpl {
 
   friend class OksConfigObject;
   friend struct OksConfigurationCheckDB;
@@ -45,15 +45,15 @@ class OksConfiguration : public oksdbinterfaces::ConfigurationImpl {
   public:
 
     virtual bool test_object(const std::string& class_name, const std::string& name, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const std::string& class_name, const std::string& name, oksdbinterfaces::ConfigObject& object, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const std::string& class_name, std::vector<oksdbinterfaces::ConfigObject>& objects, const std::string& query, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const oksdbinterfaces::ConfigObject& obj_from, const std::string& query, std::vector<oksdbinterfaces::ConfigObject>& objects, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual oksdbinterfaces::class_t * get(const std::string& class_name, bool direct_only);
-    virtual void get_superclasses(oksdbinterfaces::fmap<oksdbinterfaces::fset>& schema);
+    virtual void get(const std::string& class_name, const std::string& name, conffwk::ConfigObject& object, unsigned long rlevel, const std::vector<std::string> * rclasses);
+    virtual void get(const std::string& class_name, std::vector<conffwk::ConfigObject>& objects, const std::string& query, unsigned long rlevel, const std::vector<std::string> * rclasses);
+    virtual void get(const conffwk::ConfigObject& obj_from, const std::string& query, std::vector<conffwk::ConfigObject>& objects, unsigned long rlevel, const std::vector<std::string> * rclasses);
+    virtual conffwk::class_t * get(const std::string& class_name, bool direct_only);
+    virtual void get_superclasses(conffwk::fmap<conffwk::fset>& schema);
 
-    virtual void create(const std::string& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object);
-    virtual void create(const oksdbinterfaces::ConfigObject& at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object);
-    virtual void destroy(oksdbinterfaces::ConfigObject& object);
+    virtual void create(const std::string& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object);
+    virtual void create(const conffwk::ConfigObject& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object);
+    virtual void destroy(conffwk::ConfigObject& object);
 
     virtual void open_db(const std::string& db_name);
     virtual void close_db() { close_database(true); }
@@ -68,8 +68,8 @@ class OksConfiguration : public oksdbinterfaces::ConfigurationImpl {
     virtual void commit(const std::string& why);
     virtual void abort();
     virtual void prefetch_all_data() { ; } // nothing to do with OKS data already in-memory
-    virtual std::vector<dunedaq::oksdbinterfaces::Version> get_changes();
-    virtual std::vector<dunedaq::oksdbinterfaces::Version> get_versions(const std::string& since, const std::string& until, dunedaq::oksdbinterfaces::Version::QueryType type, bool skip_irrelevant);
+    virtual std::vector<dunedaq::conffwk::Version> get_changes();
+    virtual std::vector<dunedaq::conffwk::Version> get_versions(const std::string& since, const std::string& until, dunedaq::conffwk::Version::QueryType type, bool skip_irrelevant);
 
     virtual void subscribe(const std::set<std::string>& class_names, const SMap& objs, ConfigurationImpl::notify cb, ConfigurationImpl::pre_notify pre_cb);
     virtual void unsubscribe();
@@ -79,7 +79,7 @@ class OksConfiguration : public oksdbinterfaces::ConfigurationImpl {
 
   protected:
 
-    void create(oks::OksFile * at, const std::string& class_name, const std::string& id, oksdbinterfaces::ConfigObject& object);
+    void create(oks::OksFile * at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object);
 
   private:
 
@@ -90,14 +90,14 @@ class OksConfiguration : public oksdbinterfaces::ConfigurationImpl {
 
   public:
 
-    const oks::OksKernel& get_oks_kernel() const { return *m_kernel; }  // required by Java oksconfig
+    const oks::OksKernel& get_oks_kernel() const { return *m_kernel; }  // required by Java oksconflibs
 
 
   protected:
 
     oks::OksKernel * m_kernel;
-    oksdbinterfaces::ConfigurationImpl::notify m_fn;
-    oksdbinterfaces::ConfigurationImpl::pre_notify m_pre_fn;
+    conffwk::ConfigurationImpl::notify m_fn;
+    conffwk::ConfigurationImpl::pre_notify m_pre_fn;
     std::set<std::string> m_class_names;
     SMap m_objects;
     bool m_oks_kernel_silence;
@@ -142,7 +142,7 @@ class OksConfiguration : public oksdbinterfaces::ConfigurationImpl {
 
 };
 
-} // namespace oksconfig
+} // namespace oksconflibs
 } // namespace dunedaq
 
-#endif // OKSCONFIG_OKSCONFIGURATION_H_
+#endif // OKSCONFLIBS_OKSCONFLIBSURATION_H_

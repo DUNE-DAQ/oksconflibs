@@ -3,7 +3,7 @@
 
 include(CMakeFindDependencyMacro)
 
-find_package(oksdbinterfaces)
+find_package(conffwk)
 find_package(oksutils)
 find_package(oks)
 find_package(logging)

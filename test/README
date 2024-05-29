@@ -11,9 +11,9 @@ TDAQ_DB_DATA
 
 1. Test simple files:
 
-    % setenv LD_LIBRARY_PATH   /.../oksconfig/vXrYpZ/${CMTCONFIG}
+    % setenv LD_LIBRARY_PATH   /.../oksconflibs/vXrYpZ/${CMTCONFIG}
 
-    % setenv TDAQ_DB_PATH      /.../oksconfig/vXrYpZ/test 
+    % setenv TDAQ_DB_PATH      /.../oksconflibs/vXrYpZ/test 
 
     % setenv TDAQ_DB_SCHEMA    okstest.schema.xml
 
