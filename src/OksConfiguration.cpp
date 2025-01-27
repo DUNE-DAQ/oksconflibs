@@ -1237,6 +1237,14 @@ OksConfiguration::get_includes(const std::string& db_name, std::list<std::string
     }
 }
 
+std::vector<std::string>
+OksConfiguration::get_schema() const {
+  std::vector<std::string> result;
+  for (auto file: m_kernel->schema_files()) {
+    result.push_back(file.second->get_short_file_name());
+  }
+  return result;
+}
 
 void
 OksConfiguration::check_db()

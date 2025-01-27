@@ -37,44 +37,50 @@ class OksConfiguration : public conffwk::ConfigurationImpl {
 
   public:
 
-    OksConfiguration() noexcept : m_kernel (0), m_fn (0), m_oks_kernel_no_repo(false), m_check_db_obj (0), m_check_db_thread (0), m_repo_error_count(0) { init_env(); }
-    virtual ~OksConfiguration() { close_db(); }
+    OksConfiguration() noexcept : m_kernel (nullptr), m_fn (0),
+                                  m_oks_kernel_no_repo(false),
+                                  m_check_db_obj (nullptr),
+                                  m_check_db_thread (nullptr),
+                                  m_repo_error_count(0) {
+        init_env();
+    }
+
+    ~OksConfiguration() override {close_db();}
 
     typedef std::map< std::string , std::set<std::string> > SMap;
 
-  public:
+    bool test_object(const std::string& class_name, const std::string& name, unsigned long rlevel, const std::vector<std::string> * rclasses) override;
+    void get(const std::string& class_name, const std::string& name, conffwk::ConfigObject& object, unsigned long rlevel, const std::vector<std::string> * rclasses) override;
+    void get(const std::string& class_name, std::vector<conffwk::ConfigObject>& objects, const std::string& query, unsigned long rlevel, const std::vector<std::string> * rclasses) override;
+    void get(const conffwk::ConfigObject& obj_from, const std::string& query, std::vector<conffwk::ConfigObject>& objects, unsigned long rlevel, const std::vector<std::string> * rclasses) override;
+    conffwk::class_t * get(const std::string& class_name, bool direct_only) override;
+    void get_superclasses(conffwk::fmap<conffwk::fset>& schema) override;
 
-    virtual bool test_object(const std::string& class_name, const std::string& name, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const std::string& class_name, const std::string& name, conffwk::ConfigObject& object, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const std::string& class_name, std::vector<conffwk::ConfigObject>& objects, const std::string& query, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual void get(const conffwk::ConfigObject& obj_from, const std::string& query, std::vector<conffwk::ConfigObject>& objects, unsigned long rlevel, const std::vector<std::string> * rclasses);
-    virtual conffwk::class_t * get(const std::string& class_name, bool direct_only);
-    virtual void get_superclasses(conffwk::fmap<conffwk::fset>& schema);
+    void create(const std::string& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object) override;
+    void create(const conffwk::ConfigObject& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object) override;
+    void destroy(conffwk::ConfigObject& object) override;
 
-    virtual void create(const std::string& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object);
-    virtual void create(const conffwk::ConfigObject& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object);
-    virtual void destroy(conffwk::ConfigObject& object);
+    void open_db(const std::string& db_name) override;
+  void close_db() override { close_database(true); };
+    bool loaded() const noexcept override { return (m_kernel != 0); }
+    void create(const std::string& db_name, const std::list<std::string>& includes) override;
+    bool is_writable(const std::string& db_name) override;
+    void add_include(const std::string& db_name, const std::string& include) override;
+    void remove_include(const std::string& db_name, const std::string& include) override;
+    void get_includes(const std::string& db_name, std::list<std::string>& includes) const override;
+    std::vector<std::string> get_schema() const override;
+    void get_updated_dbs(std::list<std::string>& dbs) const override;
+    void set_commit_credentials(const std::string& user, const std::string& password) override;
+    void commit(const std::string& why) override;
+    void abort() override;
+    void prefetch_all_data() override {} // nothing to do with OKS data already in-memory
+    std::vector<dunedaq::conffwk::Version> get_changes() override;
+    std::vector<dunedaq::conffwk::Version> get_versions(const std::string& since, const std::string& until, dunedaq::conffwk::Version::QueryType type, bool skip_irrelevant) override;
 
-    virtual void open_db(const std::string& db_name);
-    virtual void close_db() { close_database(true); }
-    virtual bool loaded() const noexcept { return (m_kernel != 0); }
-    virtual void create(const std::string& db_name, const std::list<std::string>& includes);
-    virtual bool is_writable(const std::string& db_name);
-    virtual void add_include(const std::string& db_name, const std::string& include);
-    virtual void remove_include(const std::string& db_name, const std::string& include);
-    virtual void get_includes(const std::string& db_name, std::list<std::string>& includes) const;
-    virtual void get_updated_dbs(std::list<std::string>& dbs) const;
-    virtual void set_commit_credentials(const std::string& user, const std::string& password);
-    virtual void commit(const std::string& why);
-    virtual void abort();
-    virtual void prefetch_all_data() { ; } // nothing to do with OKS data already in-memory
-    virtual std::vector<dunedaq::conffwk::Version> get_changes();
-    virtual std::vector<dunedaq::conffwk::Version> get_versions(const std::string& since, const std::string& until, dunedaq::conffwk::Version::QueryType type, bool skip_irrelevant);
+    void subscribe(const std::set<std::string>& class_names, const SMap& objs, ConfigurationImpl::notify cb, ConfigurationImpl::pre_notify pre_cb) override;
+    void unsubscribe() override;
 
-    virtual void subscribe(const std::set<std::string>& class_names, const SMap& objs, ConfigurationImpl::notify cb, ConfigurationImpl::pre_notify pre_cb);
-    virtual void unsubscribe();
-
-    virtual void print_profiling_info() noexcept;
+    void print_profiling_info() noexcept override;
 
 
   protected:
@@ -90,7 +96,7 @@ class OksConfiguration : public conffwk::ConfigurationImpl {
 
   public:
 
-    const oks::OksKernel& get_oks_kernel() const { return *m_kernel; }  // required by Java oksconflibs
+    [[nodiscard]] const oks::OksKernel& get_oks_kernel() const { return *m_kernel; }  // required by Java oksconflibs
 
 
   protected:
@@ -104,7 +110,6 @@ class OksConfiguration : public conffwk::ConfigurationImpl {
     bool m_oks_kernel_no_repo;
 
       // read oks::OksKernel parameters from environment (silence mode)
-
     void init_env();
 
 
@@ -132,12 +137,10 @@ class OksConfiguration : public conffwk::ConfigurationImpl {
 
 
       // keep information about created files
-
     std::set<oks::OksFile *> m_created_files;
 
 
       //
-
     unsigned int m_repo_error_count;
 
 };
