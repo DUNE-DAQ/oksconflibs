@@ -741,7 +741,7 @@ OksConfiguration::get(const std::string& class_name, bool direct_only)
     throw dunedaq::conffwk::NotFound(ERS_HERE, "class", class_name.c_str());
   }
 
-  dunedaq::conffwk::class_t * d = new dunedaq::conffwk::class_t(c->get_name(), c->get_description(), c->get_is_abstract());
+  dunedaq::conffwk::class_t * d = new dunedaq::conffwk::class_t(c->get_name(), c->get_description(), c->get_file()->get_full_file_name(), c->get_is_abstract());
 
   if(direct_only) {
     if(const std::list<std::string *> * classes = c->direct_super_classes()) {
