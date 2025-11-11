@@ -154,9 +154,37 @@ is_repo_name(const std::string& name)
 void
 OksConfiguration::open_db(const std::string& spec_params)
 {
-    // separate parameters first
+  // separate parameters first
 
-  std::string::size_type idx = spec_params.find_first_of('&');
+
+  // Spec format : "<data>&<params>"
+
+  // params = <par1>;<par2>
+  // data = <path_to_file1.data.xml>:<path_to_file2.xml>
+
+
+  // Overall : <path_to_file1.data.xml>:<path_to_file2.xml>&<par1>;<par2>
+
+  // Proposed new syntax
+
+  // db_path_1:db_path2%db_file_1.xml:db_file_2.xml&par1;par2
+
+  // Extract repodir specifiers
+  std::string::size_type idx = spec_params.find_first_of('%');
+  std::string repos, others;
+
+  if (idx == std::string::npos)
+    {
+      others = spec_params;
+    }
+  else
+    {
+      repos = spec_params.substr(0, idx);
+      others = spec_params.substr(idx + 1);
+    }
+
+
+  idx = others.find_first_of('&');
 
   std::string data, params;
 
@@ -174,15 +202,15 @@ OksConfiguration::open_db(const std::string& spec_params)
 
   // guess about oks kernel mode based on the file names
 
-    {
-      Oks::Tokenizer t(data, ":");
+  {
+    Oks::Tokenizer t(data, ":");
 
-      while (!(token = t.next()).empty())
-        {
-          if (is_repo_name(token) == false)
-            m_oks_kernel_no_repo = true;
-        }
-    }
+    while (!(token = t.next()).empty())
+      {
+        if (is_repo_name(token) == false)
+          m_oks_kernel_no_repo = true;
+      }
+  }
 
     // create OKS kernel if it was not created
 
@@ -201,6 +229,14 @@ OksConfiguration::open_db(const std::string& spec_params)
 
       m_kernel = new OksKernel(m_oks_kernel_silence, false, false, !m_oks_kernel_no_repo);
     }
+  
+  {
+    Oks::Tokenizer t(repos, ":");
+    while(!(token = t.next()).empty()) {
+      m_kernel->insert_repository_dir(token);
+    }
+  }
+
 
   Oks::Tokenizer t(data, ":");
 
@@ -431,10 +467,10 @@ class ResubscribeGuard {
     ResubscribeGuard(OksConfiguration & db) : m_db(db) {
       if(m_db.m_check_db_obj) {
         m_db.unsubscribe();
-	m_restart = true;
+        m_restart = true;
       }
       else {
-	m_restart = false;
+        m_restart = false;
       }
 
       m_db.m_created.clear();
@@ -773,39 +809,39 @@ OksConfiguration::get(const std::string& class_name, bool direct_only)
 
       const_cast< std::vector<dunedaq::conffwk::attribute_t>& >(d->p_attributes).push_back(
         dunedaq::conffwk::attribute_t(
-	  i->get_name(),
+          i->get_name(),
           (
-	    type == OksData::string_type  ? dunedaq::conffwk::string_type :
-	    type == OksData::enum_type    ? dunedaq::conffwk::enum_type   :
-	    type == OksData::bool_type    ? dunedaq::conffwk::bool_type   :
-	    type == OksData::s8_int_type  ? dunedaq::conffwk::s8_type     :
-	    type == OksData::u8_int_type  ? dunedaq::conffwk::u8_type     :
-	    type == OksData::s16_int_type ? dunedaq::conffwk::s16_type    :
-	    type == OksData::u16_int_type ? dunedaq::conffwk::u16_type    :
-	    type == OksData::s32_int_type ? dunedaq::conffwk::s32_type    :
-	    type == OksData::u32_int_type ? dunedaq::conffwk::u32_type    :
-	    type == OksData::s64_int_type ? dunedaq::conffwk::s64_type    :
-	    type == OksData::u64_int_type ? dunedaq::conffwk::u64_type    :
-	    type == OksData::float_type   ? dunedaq::conffwk::float_type  :
-	    type == OksData::double_type  ? dunedaq::conffwk::double_type :
-	    type == OksData::date_type    ? dunedaq::conffwk::date_type   :
-	    type == OksData::time_type    ? dunedaq::conffwk::time_type   :
-	    dunedaq::conffwk::class_type
-	  ),
+            type == OksData::string_type  ? dunedaq::conffwk::string_type :
+            type == OksData::enum_type    ? dunedaq::conffwk::enum_type   :
+            type == OksData::bool_type    ? dunedaq::conffwk::bool_type   :
+            type == OksData::s8_int_type  ? dunedaq::conffwk::s8_type     :
+            type == OksData::u8_int_type  ? dunedaq::conffwk::u8_type     :
+            type == OksData::s16_int_type ? dunedaq::conffwk::s16_type    :
+            type == OksData::u16_int_type ? dunedaq::conffwk::u16_type    :
+            type == OksData::s32_int_type ? dunedaq::conffwk::s32_type    :
+            type == OksData::u32_int_type ? dunedaq::conffwk::u32_type    :
+            type == OksData::s64_int_type ? dunedaq::conffwk::s64_type    :
+            type == OksData::u64_int_type ? dunedaq::conffwk::u64_type    :
+            type == OksData::float_type   ? dunedaq::conffwk::float_type  :
+            type == OksData::double_type  ? dunedaq::conffwk::double_type :
+            type == OksData::date_type    ? dunedaq::conffwk::date_type   :
+            type == OksData::time_type    ? dunedaq::conffwk::time_type   :
+            dunedaq::conffwk::class_type
+          ),
           i->get_range(),
-	  (
-	    i->is_integer() == false ? dunedaq::conffwk::na_int_format :
-	      (
-	        format == OksAttribute::Dec ? dunedaq::conffwk::dec_int_format :
-	        format == OksAttribute::Hex ? dunedaq::conffwk::hex_int_format :
-	        dunedaq::conffwk::oct_int_format
-	      )
-	  ),
+          (
+            i->is_integer() == false ? dunedaq::conffwk::na_int_format :
+              (
+                format == OksAttribute::Dec ? dunedaq::conffwk::dec_int_format :
+                format == OksAttribute::Hex ? dunedaq::conffwk::hex_int_format :
+                dunedaq::conffwk::oct_int_format
+              )
+          ),
           i->get_is_no_null(),
-	  i->get_is_multi_values(),
+          i->get_is_multi_values(),
           i->get_init_value(),
-	  i->get_description()
-	)
+          i->get_description()
+        )
       );
 
     }
@@ -1023,15 +1059,15 @@ check(std::vector<conffwk::ConfigurationChange *>& changes,
         // 3. add explicitly subscribed object
 
       if(
-	any ||
-	(
-	  omi == objects.end() &&
-	  class_names.find(*j) != class_names.end()
-	) ||
-	(
-	  omi != objects.end() &&
-	  omi->second.find(obj_id) != omi->second.end()
-	)
+        any ||
+        (
+          omi == objects.end() &&
+          class_names.find(*j) != class_names.end()
+        ) ||
+        (
+          omi != objects.end() &&
+          omi->second.find(obj_id) != omi->second.end()
+        )
       ) {
         conffwk::ConfigurationChange::add(changes, *j, obj_id, action);
       }
@@ -1377,8 +1413,8 @@ OksConfiguration::check_db()
 void
 OksConfiguration::subscribe(const std::set<std::string>& class_names,
                             const SMap& objs,
-			    ConfigurationImpl::notify cb,
-			    ConfigurationImpl::pre_notify pre_cb)
+                            ConfigurationImpl::notify cb,
+                            ConfigurationImpl::pre_notify pre_cb)
 {
   m_fn = cb;
   m_pre_fn = pre_cb;

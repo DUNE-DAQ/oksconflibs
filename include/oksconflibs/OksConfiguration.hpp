@@ -55,7 +55,20 @@ class OksConfiguration : public conffwk::ConfigurationImpl {
     virtual void create(const conffwk::ConfigObject& at, const std::string& class_name, const std::string& id, conffwk::ConfigObject& object);
     virtual void destroy(conffwk::ConfigObject& object);
 
-    virtual void open_db(const std::string& db_name);
+    /**
+    *  \brief Opens a list of database files according to the spec string
+    *
+    * The connection string has the following format "<data>&<params>" where
+    * <data> is a colon-separated list of paths to oks data files
+    * <params> is a semi-colon separated list.
+    * 
+    * Example: "<path_to_data1.xml>:<path_to_data2.xml>&<par1>;<par2>"
+    * 
+    *  \param spec         database name to be understood by the database implementation
+    *
+    *  \throw dunedaq::conffwk::Generic in case of an error
+    */
+    virtual void open_db(const std::string& db_spec);
     virtual void close_db() { close_database(true); }
     virtual bool loaded() const noexcept { return (m_kernel != 0); }
     virtual void create(const std::string& db_name, const std::list<std::string>& includes);
