@@ -157,17 +157,25 @@ OksConfiguration::open_db(const std::string& spec_params)
   // separate parameters first
 
 
-  // Spec format : "<data>&<params>"
-
-  // params = <par1>;<par2>
+  // ---------------------------------------------------
+  // Current spec format : "<data>&<params>"
+  // ---------------------------------------------------
+  //
   // data = <path_to_file1.data.xml>:<path_to_file2.xml>
-
-
-  // Overall : <path_to_file1.data.xml>:<path_to_file2.xml>&<par1>;<par2>
-
-  // Proposed new syntax
-
-  // db_path_1:db_path2%db_file_1.xml:db_file_2.xml&par1;par2
+  // params = <par1>;<par2>
+  //
+  // pverall spec: <path_to_file1.data.xml>:<path_to_file2.xml>&<par1>;<par2>
+  //
+  //
+  // ---------------------------------------------------
+  // Proposed new spec format: "<repos>%<data>&<params>"
+  // ---------------------------------------------------
+  // 
+  // repos = <path_to_repo_1>:<path_to_repo2>
+  // data = <path_to_file1.data.xml>:<path_to_file2.xml>
+  // params = <par1>;<par2>
+  //
+  // overall spec: <db_path_1>:<db_path2>%<db_file_1.xml>:<db_file_2.xml>&<par1>;<par2>
 
   // Extract repodir specifiers
   std::string::size_type idx = spec_params.find_first_of('%');
