@@ -1,3 +1,5 @@
+<!-- DUNE DAQ modification notice: This file has been modified from the original ATLAS oksconfig source for the DUNE DAQ project. Fork baseline commit: oksconfig-03-02-00 (2021-04-20). Renamed since fork: yes (from test/recursive.data.xml to test/apps/recursive.data.xml). -->
+
 <?xml version="1.0" encoding="ASCII"?>
 
 <!-- oks-data version 2.2 -->
