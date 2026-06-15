@@ -1,9 +1,9 @@
-/*
- * DUNE DAQ modification notice:
- * This file has been modified from the original ATLAS oksconfig source for the DUNE DAQ project.
- * Fork baseline commit: oksconfig-03-02-00 (2021-04-20).
- * Renamed since fork: yes (from oksconfig/OksConfiguration.h to include/oksconflibs/OksConfiguration.hpp).
- */
+//
+// DUNE DAQ modification notice:
+// This file has been modified from the original ATLAS oksconfig source for the DUNE DAQ project.
+// Fork baseline commit: oksconfig-03-02-00 (2021-04-20).
+// Renamed since fork: yes (from oksconfig/OksConfiguration.h to include/oksconflibs/OksConfiguration.hpp).
+//
 
 // this is -*- c++ -*-
 #ifndef OKSCONFLIBS_OKSCONFLIBSURATION_H_
