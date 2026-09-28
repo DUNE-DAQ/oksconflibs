@@ -1,5 +1,10 @@
+# DUNE DAQ modification notice:
+# This file has been modified from the original ATLAS oksconfig source for the DUNE DAQ project.
+# Fork baseline commit: oksconfig-03-02-00 (2021-04-20).
+# Renamed since fork: no.
+
 cmake_minimum_required(VERSION 3.12)
-project(oksconflibs VERSION 1.2.0)
+project(oksconflibs VERSION 1.2.1)
 
 find_package(daq-cmake REQUIRED)
 
